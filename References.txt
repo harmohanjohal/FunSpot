@@ -1,0 +1,76 @@
+References: 
+
+1.) External APIs
+
+Google Maps Directions API
+
+Documentation: https://developers.google.com/maps/documentation/directions/overview
+Used to get routing information
+
+
+Pixabay API
+
+Documentation: https://pixabay.com/api/docs/
+Used to fetch event images
+API Reference: https://pixabay.com/api/
+
+
+ExchangeRatesAPI
+
+Documentation: http://exchangeratesapi.io/documentation
+Used for currency conversion
+
+
+Wikipedia API
+
+Documentation: https://www.mediawiki.org/wiki/API:Main_page
+Used to fetch information about cities
+
+
+ZXing QR Code Library
+
+Documentation: https://github.com/zxing/zxing
+Used for generating QR codes
+
+
+2.React and Frontend References:
+
+React Hooks Documentation
+
+For the custom hooks
+https://reactjs.org/docs/hooks-intro.html
+
+React Router
+
+Used in application for navigation
+https://reactrouter.com/en/6.4.5/start/overview
+
+Axios HTTP Client
+
+Used in your API service files
+https://axios-http.com/docs/api_intro
+
+CSS in React
+
+For CSS files
+https://create-react-app.dev/docs/adding-a-stylesheet/
+
+Firebase Web Auth Methods Reference
+
+https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth
+
+Firebase Firestore Data Operations
+
+For Firestore operations user management code
+https://firebase.google.com/docs/firestore/manage-data/add-data
+
+Postman API Testing
+
+For testing Java REST endpoints
+https://learning.postman.com/docs/getting-started/introduction/
+
+
+Docker Compose Reference
+
+For docker-compose.yml configuration
+https://docs.docker.com/compose/compose-file/
