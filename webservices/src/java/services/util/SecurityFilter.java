@@ -1,6 +1,5 @@
 package services.util;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -22,7 +21,7 @@ public class SecurityFilter implements ContainerRequestFilter {
     private static final String AUTH_SCHEME = "Bearer";
     private static final String SECRET_KEY = System.getenv("JWT_SECRET") != null
             ? System.getenv("JWT_SECRET")
-            : "soct_secret_key_2025";
+            : "soct_secret_key_2025_must_be_at_least_32_bytes_long_for_security_123456789";
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {

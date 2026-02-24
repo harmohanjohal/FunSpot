@@ -36,8 +36,17 @@ const QRCodeDisplay = ({ bookingReference, eventTitle, eventDate, numTickets, us
 
         console.log("Fetching QR code from:", fullUrl);
 
-        // Fetch QR code from backend
-        const response = await fetch(fullUrl);
+        // Fetch QR code from backend with authorization
+        const token = localStorage.getItem('token');
+        const fetchOptions = {
+          headers: {}
+        };
+
+        if (token) {
+          fetchOptions.headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(fullUrl, fetchOptions);
 
         if (!response.ok) {
           throw new Error(`API responded with status: ${response.status}`);

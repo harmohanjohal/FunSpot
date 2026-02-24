@@ -11,7 +11,7 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { event, numTickets } = location.state || {};
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState({
@@ -20,15 +20,15 @@ function CheckoutPage() {
     expiryDate: '',
     cvv: '',
   });
-  
+
   // Currency conversion states
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [totalPriceAmount, setTotalPriceAmount] = useState(0);
   const [isConverting, setIsConverting] = useState(false);
-  
+
   // Form errors
   const [errors, setErrors] = useState({});
-  
+
   // Currency options
   const currencies = {
     "USD": "US Dollar",
@@ -39,7 +39,7 @@ function CheckoutPage() {
     "INR": "Indian Rupee",
     "JPY": "Japanese Yen"
   };
-  
+
   // Set initial currency and price
   useEffect(() => {
     if (event) {
@@ -48,7 +48,7 @@ function CheckoutPage() {
       setTotalPriceAmount((numTickets * event.ticketPrice).toFixed(2));
     }
   }, [event, numTickets]);
-  
+
   // Check if there is valid state data
   useEffect(() => {
     // If navigated directly to this page without state, redirect to events
@@ -56,14 +56,14 @@ function CheckoutPage() {
       navigate('/events');
     }
   }, [event, numTickets, navigate]);
-  
+
   // Handle input change
   const handleInputChange = (field, value) => {
     setPaymentInfo({
       ...paymentInfo,
       [field]: value
     });
-    
+
     // Clear error for this field
     if (errors[field]) {
       setErrors({
@@ -72,29 +72,29 @@ function CheckoutPage() {
       });
     }
   };
-  
+
   // Handle currency change
   const handleCurrencyChange = async (e) => {
     const newCurrency = e.target.value;
-    
+
     // If same as current currency, do nothing
     if (newCurrency === selectedCurrency) {
       return;
     }
-    
+
     setIsConverting(true);
     setError(null);
-    
+
     try {
       // Call the API to convert the currency
       const response = await convertEventPrice(event.eventId, newCurrency);
-      
+
       if (response && response.success) {
         // The API returns the converted price for a single ticket
         // Multiply by the number of tickets to get total price
         const convertedUnitPrice = response.convertedAmount || response.amount;
         const convertedTotalPrice = (convertedUnitPrice * numTickets).toFixed(2);
-        
+
         setSelectedCurrency(newCurrency);
         setTotalPriceAmount(convertedTotalPrice);
       } else {
@@ -104,7 +104,7 @@ function CheckoutPage() {
     } catch (error) {
       console.error('Error converting currency:', error);
       setError('Failed to convert currency. Please try again.');
-      
+
       // Revert to original currency
       setSelectedCurrency(event.currency || 'USD');
       setTotalPriceAmount((numTickets * event.ticketPrice).toFixed(2));
@@ -112,65 +112,65 @@ function CheckoutPage() {
       setIsConverting(false);
     }
   };
-  
+
   // Validate form
   const validateForm = () => {
     const newErrors = {};
-    
+
     // Simple validation rules
     if (!paymentInfo.cardNumber) {
       newErrors.cardNumber = 'Card number is required';
     } else if (!/^\d{16}$/.test(paymentInfo.cardNumber.replace(/\s/g, ''))) {
       newErrors.cardNumber = 'Please enter a valid 16-digit card number';
     }
-    
+
     if (!paymentInfo.cardName) {
       newErrors.cardName = 'Name on card is required';
     }
-    
+
     if (!paymentInfo.expiryDate) {
       newErrors.expiryDate = 'Expiry date is required';
     } else if (!/^\d{2}\/\d{2}$/.test(paymentInfo.expiryDate)) {
       newErrors.expiryDate = 'Please use MM/YY format';
     }
-    
+
     if (!paymentInfo.cvv) {
       newErrors.cvv = 'CVV is required';
     } else if (!/^\d{3,4}$/.test(paymentInfo.cvv)) {
       newErrors.cvv = 'CVV must be 3 or 4 digits';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     if (!validateForm()) {
       return;
     }
-    
+
     // Check if there is event data
     if (!event || !numTickets) {
       setError('Missing event information. Please go back and try again.');
       return;
     }
-    
+
     try {
       setLoading(true);
       setError(null);
-      
+
       // Call API to book tickets
       const response = await bookEvent(event.eventId, numTickets);
-      
+
       // Check if the API call was successful
       if (response && response.success) {
         // Generate a booking reference if none is provided by the API
         const bookingReference = response.bookingReference || `BOOK-${Date.now().toString(36).toUpperCase()}`;
-        
+
         // Store booking in user's Firebase record
         await addBookingToUser(currentUser.uid, {
           eventId: event.eventId,
@@ -184,10 +184,10 @@ function CheckoutPage() {
           status: 'confirmed',
           username: currentUser.email
         });
-        
+
         // Navigate to success page with booking details
-        navigate('/booking-success', { 
-          state: { 
+        navigate('/booking-success', {
+          state: {
             eventTitle: event.title,
             eventDate: event.date,
             bookingReference: bookingReference,
@@ -195,7 +195,7 @@ function CheckoutPage() {
             totalPrice: totalPriceAmount,
             currency: selectedCurrency,
             username: currentUser.email || currentUser.displayName
-          } 
+          }
         });
       } else {
         // Handle booking failure
@@ -208,29 +208,53 @@ function CheckoutPage() {
       setLoading(false);
     }
   };
-  
+
   // Handle cancel
   const handleCancel = () => {
     navigate(-1); // Go back to previous page
   };
-  
+
   // If no event data, show loading until the useEffect redirects
   if (!event || !numTickets) {
     return <LoadingSpinner message="Loading checkout..." />;
   }
-  
+
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h2>Checkout</h2>
+      <div className="dashboard-header" style={{
+        display: 'flex',
+        alignItems: 'center',
+        paddingBottom: '1.5rem',
+        marginBottom: '2rem',
+        borderBottom: '1px solid var(--border)'
+      }}>
+        <button
+          onClick={handleCancel}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            marginRight: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px',
+            borderRadius: 'var(--radius-md)'
+          }}
+          className="hover:bg-gray-100 transition-colors"
+          title="Go Back"
+        >
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </button>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-main)', margin: 0 }}>Checkout</h2>
       </div>
-      
+
       {error && (
         <div className="alert alert-danger">
           {error}
         </div>
       )}
-      
+
       {loading ? (
         <LoadingSpinner message="Processing payment..." />
       ) : (
@@ -240,17 +264,17 @@ function CheckoutPage() {
             <h3 className="dashboard-title">Order Summary</h3>
             <div className="order-summary">
               <h4>{event.title}</h4>
-              <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString('en-GB', { 
-                day: 'numeric', month: 'short', year: 'numeric' 
+              <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString('en-GB', {
+                day: 'numeric', month: 'short', year: 'numeric'
               })}</p>
               <p><strong>Location:</strong> {event.location}</p>
               <p><strong>Number of Tickets:</strong> {numTickets}</p>
-              
-              <div className="price-summary" style={{ 
-                marginTop: '20px', 
-                padding: '15px', 
-                borderTop: '1px solid #eee',
-                borderBottom: '1px solid #eee'
+
+              <div className="price-summary" style={{
+                marginTop: '1.5rem',
+                padding: '1.5rem 0',
+                borderTop: '1px solid var(--border)',
+                borderBottom: '1px solid var(--border)'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Price per ticket:</span>
@@ -260,7 +284,7 @@ function CheckoutPage() {
                   <span><strong>Total Price:</strong></span>
                   <span><strong>{totalPriceAmount} {selectedCurrency}</strong></span>
                 </div>
-                
+
                 {/* Currency Conversion Dropdown */}
                 <div style={{ marginTop: '15px' }}>
                   <label htmlFor="currencySelect" style={{ display: 'block', marginBottom: '5px' }}>
@@ -279,7 +303,7 @@ function CheckoutPage() {
                       </option>
                     ))}
                   </select>
-                  
+
                   {isConverting && (
                     <div style={{ marginTop: '5px', fontSize: '14px', color: '#1da1f2' }}>
                       Converting...
@@ -289,7 +313,7 @@ function CheckoutPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Payment Form */}
           <div className="dashboard-card">
             <h3 className="dashboard-title">Payment Details</h3>
@@ -303,7 +327,7 @@ function CheckoutPage() {
                 onChange={(e) => handleInputChange('cardNumber', e.target.value)}
                 error={errors.cardNumber}
               />
-              
+
               <FormField
                 id="cardName"
                 label="Name on Card"
@@ -313,7 +337,7 @@ function CheckoutPage() {
                 onChange={(e) => handleInputChange('cardName', e.target.value)}
                 error={errors.cardName}
               />
-              
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                 <FormField
                   id="expiryDate"
@@ -324,7 +348,7 @@ function CheckoutPage() {
                   onChange={(e) => handleInputChange('expiryDate', e.target.value)}
                   error={errors.expiryDate}
                 />
-                
+
                 <FormField
                   id="cvv"
                   label="CVV"
@@ -335,25 +359,27 @@ function CheckoutPage() {
                   error={errors.cvv}
                 />
               </div>
-              
+
               <p style={{ fontSize: '14px', color: '#657786', marginTop: '15px' }}>
                 This is a demo application. No actual payment will be processed.
               </p>
-              
-              <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+
+              <div style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="btn btn-secondary"
+                  className="btn-secondary-action"
                   disabled={loading || isConverting}
+                  style={{ justifyContent: 'center', minWidth: '100px' }}
                 >
                   Cancel
                 </button>
-                
+
                 <button
                   type="submit"
-                  className="btn"
+                  className="btn-primary-action"
                   disabled={loading || isConverting}
+                  style={{ minWidth: '150px' }}
                 >
                   {loading ? 'Processing...' : `Pay ${totalPriceAmount} ${selectedCurrency}`}
                 </button>

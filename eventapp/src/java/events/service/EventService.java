@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import events.model.Event;
 import events.model.SearchCriteria;
+import events.util.ConfigLoader;
 import events.util.ErrorUtils;
 import events.util.EventValidator;
 import events.util.JSONFieldValidator;
@@ -31,22 +32,26 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.PUT;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.nio.charset.StandardCharsets;
 
 // REST API path is "api/events"
 @Path("events")
 public class EventService {
 
     // Base URLs for external services
-    private static final String SERVICES_BASE_URL = System.getenv("WEBSERVICES_URL") != null
-            ? System.getenv("WEBSERVICES_URL")
-            : "http://localhost:8082/api";
-
-    private static final String IMAGES_SERVICES_BASE_URL = System.getenv("IMAGESERVICE_URL") != null
-            ? System.getenv("IMAGESERVICE_URL")
-            : "http://localhost:8083/api";
+    private static final String SERVICES_BASE_URL = ConfigLoader.getProperty("WEBSERVICES_URL",
+            "http://localhost:8082/api");
+    private static final String IMAGES_SERVICES_BASE_URL = ConfigLoader.getProperty("IMAGESERVICE_URL",
+            "http://localhost:8083/api");
 
     // Services used
     private final EventRepository repository;
@@ -727,5 +732,44 @@ public class EventService {
         }
 
         return response.toString();
+    }
+
+    // GET /api/events/auth/token - generate a JWT for frontend Firebase users
+    @GET
+    @Path("auth/token")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String generateToken(@QueryParam("email") String email, @QueryParam("role") String role) {
+        if (email == null || email.trim().isEmpty()) {
+            return ErrorUtils.createErrorResponse("Email is required");
+        }
+
+        try {
+            // Must be at least 32 bytes for HS256, 64 bytes for HS512
+            // "soct_secret_key_2025_must_be_at_least_32_bytes_long_for_security_123456789"
+            // is 75 bytes
+            String secretString = ConfigLoader.getProperty("JWT_SECRET",
+                    "soct_secret_key_2025_must_be_at_least_32_bytes_long_for_security_123456789");
+            Key key = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
+
+            // Set expiration to 24 hours
+            long expMillis = System.currentTimeMillis() + (24 * 60 * 60 * 1000);
+            Date exp = new Date(expMillis);
+
+            String jws = Jwts.builder()
+                    .setSubject(email)
+                    .claim("role", role != null ? role : "user")
+                    .setIssuedAt(new Date())
+                    .setExpiration(exp)
+                    .signWith(key, SignatureAlgorithm.HS256)
+                    .compact();
+
+            JSONObject response = new JSONObject();
+            response.put("success", true);
+            response.put("token", jws);
+            return response.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ErrorUtils.createErrorResponse("Error generating token: " + e.getMessage(), e);
+        }
     }
 }

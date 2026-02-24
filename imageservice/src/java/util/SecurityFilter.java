@@ -1,6 +1,5 @@
 package util;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -20,14 +19,21 @@ import java.nio.charset.StandardCharsets;
 public class SecurityFilter implements ContainerRequestFilter {
 
     private static final String AUTH_SCHEME = "Bearer";
-    private static final String SECRET_KEY = System.getenv("JWT_SECRET") != null
-            ? System.getenv("JWT_SECRET")
-            : "soct_secret_key_2025";
+    private static final String SECRET_KEY = ConfigLoader.getProperty("JWT_SECRET",
+            "soct_secret_key_2025_must_be_at_least_32_bytes_long_for_security_123456789");
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        // Protect POST methods (QR code generation)
-        if (!requestContext.getMethod().equals("POST")) {
+        String method = requestContext.getMethod();
+
+        // Allow OPTIONS requests for CORS preflight
+        if (method.equals("OPTIONS")) {
+            return;
+        }
+
+        // Protect /images/qrcode endpoint (requires auth even though it's a GET)
+        String path = requestContext.getUriInfo().getPath();
+        if (!method.equals("POST") && !path.contains("/qrcode")) {
             return;
         }
 

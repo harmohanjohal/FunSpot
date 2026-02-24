@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 import LoadingSpinner from '../common/LoadingSpinner';
+import { API_CONFIG } from '../../config';
 
 function CityInfoModal({ city, isOpen, onClose }) {
   const [loading, setLoading] = useState(true);
@@ -19,7 +20,8 @@ function CityInfoModal({ city, isOpen, onClose }) {
 
     try {
       // Call the backend API
-      const response = await fetch(`http://localhost:8081/api/events/city-info?city=${encodeURIComponent(cityName)}`);
+      const baseUrl = API_CONFIG.BASE_URL || 'http://localhost:8081/api';
+      const response = await fetch(`${baseUrl}/events/city-info?city=${encodeURIComponent(cityName)}`);
 
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);

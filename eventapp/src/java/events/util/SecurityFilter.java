@@ -20,29 +20,45 @@ import java.nio.charset.StandardCharsets;
 public class SecurityFilter implements ContainerRequestFilter {
 
     private static final String AUTH_SCHEME = "Bearer";
-    private static final String SECRET_KEY = System.getenv("JWT_SECRET") != null
-            ? System.getenv("JWT_SECRET")
-            : "soct_secret_key_2025";
+    private static final String SECRET_KEY = ConfigLoader.getProperty("JWT_SECRET",
+            "soct_secret_key_2025_must_be_at_least_32_bytes_long_for_security_123456789");
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        // Only protect booking and cancellation endpoints for now as per requirement
         String path = requestContext.getUriInfo().getPath();
-        if (!path.contains("/book") && !path.contains("/cancel") && !requestContext.getMethod().equals("POST")) {
+        String method = requestContext.getMethod();
+
+        System.err.println("[SECURITY] Checking request: " + method + " " + path);
+
+        // Allow OPTIONS requests for CORS preflight
+        if (method.equals("OPTIONS")) {
+            System.err.println("[SECURITY] Allowing OPTIONS preflight request");
             return;
         }
 
+        // Only protect booking and cancellation endpoints for now as per requirement
+        if (!path.contains("/book") && !path.contains("/cancel") && !method.equals("POST")) {
+            System.err.println("[SECURITY] Path not protected, allowing access");
+            return;
+        }
+
+        System.err.println("[SECURITY] Path is protected. Checking for Authorization header.");
+
         // Get Authorization header
         String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+        System.err.println("[SECURITY] Auth Header Received: "
+                + (authHeader != null ? "Yes (length " + authHeader.length() + ")" : "NULL"));
 
         // Validate Auth header
         if (authHeader == null || !authHeader.startsWith(AUTH_SCHEME + " ")) {
+            System.err.println("[SECURITY] Missing or invalid Authorization header format");
             abortWithUnauthorized(requestContext, "Missing or invalid Authorization header");
             return;
         }
 
         // Extract token
         String token = authHeader.substring(AUTH_SCHEME.length()).trim();
+        System.err.println("[SECURITY] Extracted Token: " + token.substring(0, Math.min(10, token.length())) + "...");
 
         try {
             // Validate Token
@@ -56,10 +72,11 @@ public class SecurityFilter implements ContainerRequestFilter {
             // Set user context if needed
             requestContext.setProperty("auth_user", claims.getSubject());
             requestContext.setProperty("auth_role", claims.get("role"));
+            System.err.println("[SECURITY] Token validation SUCCESS for user: " + claims.getSubject());
 
         } catch (Exception e) {
-            System.err.println("JWT Validation Error: " + e.getMessage());
-            abortWithUnauthorized(requestContext, "Invalid or expired token");
+            System.err.println("[SECURITY] JWT Validation Error Details: " + e.getMessage());
+            abortWithUnauthorized(requestContext, "Invalid or expired token: " + e.getMessage());
         }
     }
 

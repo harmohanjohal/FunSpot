@@ -196,9 +196,9 @@ function UserDashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 mt-4 gap-4">
         <h2 className="text-2xl font-bold text-gray-800 m-0">User Dashboard</h2>
         <div className="flex flex-wrap gap-3 items-center">
-          <Link to="/profile" className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors">Profile</Link>
-          <Link to="/events" className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors">View Events</Link>
-          <button onClick={handleLogout} className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 rounded-lg transition-colors ml-2">Logout</button>
+          <Link to="/profile" className="btn-secondary-action py-2">Profile</Link>
+          <Link to="/events" className="btn-secondary-action py-2">View Events</Link>
+          <button onClick={handleLogout} className="btn-secondary-action py-2" style={{ color: '#dc2626', borderColor: '#fca5a5', backgroundColor: '#fef2f2' }}>Logout</button>
         </div>
       </div>
 
@@ -234,7 +234,7 @@ function UserDashboard() {
               </div>
             ) : (
               <div className="flex flex-col items-center">
-                <div className="w-24 h-24 rounded-full bg-blue-500 text-white flex items-center justify-center text-3xl font-bold mb-4 shadow-sm border-4 border-blue-50">
+                <div className="w-24 h-24 rounded-full text-white flex items-center justify-center text-3xl font-bold mb-4 shadow-sm border-4 border-white" style={{ backgroundColor: 'var(--primary)', boxShadow: 'var(--shadow-md)' }}>
                   {userProfile?.name ? userProfile.name.charAt(0).toUpperCase() : 'U'}
                 </div>
 
@@ -310,7 +310,7 @@ function UserDashboard() {
             </div>
 
             <div className="flex justify-center mt-6">
-              <Link to="/events" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm">
+              <Link to="/events" className="btn-primary-action inline-flex items-center gap-2 px-6 py-3" style={{ margin: 0 }}>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 Find More Events
               </Link>
@@ -533,12 +533,12 @@ function UserDashboard() {
             <p className="text-lg text-gray-600 font-medium mb-4">You don't have any {activeTab} bookings.</p>
             <div className="flex flex-wrap justify-center gap-3">
               {activeTab !== 'all' && (
-                <button onClick={() => setActiveTab('all')} className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors">
+                <button onClick={() => setActiveTab('all')} className="btn-secondary-action">
                   View All Bookings
                 </button>
               )}
               {userBookings.length === 0 && (
-                <Link to="/events" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-sm">
+                <Link to="/events" className="btn-primary-action" style={{ margin: 0 }}>
                   Browse Events
                 </Link>
               )}

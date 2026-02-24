@@ -2,7 +2,7 @@
 echo Starting Image Service on port 8083...
 cd /d "g:\Volume G data\SOCT Docker\imageservice"
 set "JAVA_HOME=C:\Program Files\Java\jdk-18.0.2.1"
-set "JWT_SECRET=soct_secret_key_2025"
+set "JWT_SECRET=soct_secret_key_2025_must_be_at_least_32_bytes_long_for_security_123456789"
 set "PIXABAY_API_KEY=49345664-e289344f8497d7983c96d93f4"
 set "CURRENCY_API_KEY=da8f8725a9a3fd222de9a9c04b9b038c"
 set "GOOGLE_API_KEY=AIzaSyAdAZ_UNOF3iTBw8TeXSWLlGvpGjEtJCGA"
