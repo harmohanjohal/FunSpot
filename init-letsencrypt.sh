@@ -28,8 +28,8 @@ fi
 
 echo "### Creating dummy certificate for $domains ..."
 path="/etc/letsencrypt/live/$domains"
-mkdir -p "$data_path/conf/live/$domains"
 docker-compose -f docker-compose.ssl.yml run --rm --entrypoint "\
+  mkdir -p /etc/letsencrypt/live/$domains && \
   openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
     -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
