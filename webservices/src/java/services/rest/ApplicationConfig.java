@@ -23,5 +23,6 @@ public class ApplicationConfig extends Application {
         resources.add(services.rest.CurrencyResource.class);
         resources.add(services.rest.DirectionsResource.class);
         resources.add(services.util.CORSFilter.class);
+        resources.add(services.util.SecurityFilter.class);
     }
 }

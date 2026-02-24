@@ -1,0 +1,13 @@
+target
+*.jar
+*.war
+.git
+.gitignore
+Dockerfile
+nbproject
+build
+dist
+test
+# *.json removed to ensure Events.json is copied
+config.properties
+build.xml

@@ -1,0 +1,13 @@
+target
+*.jar
+*.war
+.git
+.gitignore
+Dockerfile
+nbproject
+build
+dist
+test
+*.json
+config.properties
+build.xml

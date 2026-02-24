@@ -25,7 +25,7 @@ public class EventRepository {
 
     private static final String JSON_FILE_PATH = System.getenv("JSON_FILE_PATH") != null
             ? System.getenv("JSON_FILE_PATH")
-            : "G:\\Term 2\\SOCM\\EventApp\\Events.json";
+            : "Events.json";
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     private List<Event> events;
 
@@ -35,7 +35,7 @@ public class EventRepository {
     }
 
     // Load events from file
-    private void loadEvents() {
+    private synchronized void loadEvents() {
         events = new ArrayList<Event>();
         File file = new File(JSON_FILE_PATH);
 
@@ -51,7 +51,7 @@ public class EventRepository {
 
                 try {
                     JSONArray jsonArray = new JSONArray(content);
-                
+
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonEvent = jsonArray.getJSONObject(i);
                         try {
@@ -65,11 +65,9 @@ public class EventRepository {
                     System.out.println("Loaded " + events.size() + " events from " + JSON_FILE_PATH);
                 } catch (Exception e) {
                     System.err.println("Error parsing JSON content: " + e.getMessage());
-                    e.printStackTrace();
                 }
             } catch (IOException e) {
                 System.err.println("Error loading events from JSON file: " + e.getMessage());
-                e.printStackTrace();
             }
         } else {
             System.out.println("JSON file not found. Creating a new events list.");
@@ -77,7 +75,7 @@ public class EventRepository {
     }
 
     // Save events to file
-    public void saveEvents() {
+    public synchronized void saveEvents() {
         try {
             JSONArray jsonArray = new JSONArray();
 
@@ -99,7 +97,6 @@ public class EventRepository {
             System.out.println("Saved " + events.size() + " events to " + JSON_FILE_PATH);
         } catch (IOException e) {
             System.err.println("Error saving events to JSON file: " + e.getMessage());
-            e.printStackTrace();
             throw new IllegalStateException("Failed to save events: " + e.getMessage());
         }
     }
@@ -228,7 +225,7 @@ public class EventRepository {
     }
 
     // Remove event
-    public boolean removeEvent(String id) {
+    public synchronized boolean removeEvent(String id) {
         // Check ID
         if (id == null || id.trim().isEmpty()) {
             return false;
@@ -258,7 +255,7 @@ public class EventRepository {
     }
 
     // Add new event
-    public void addEvent(Event event) {
+    public synchronized void addEvent(Event event) {
         // Check event
         if (event == null) {
             throw new IllegalArgumentException("Event cannot be null");

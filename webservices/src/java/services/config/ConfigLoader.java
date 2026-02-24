@@ -12,13 +12,13 @@ import java.util.Properties;
 public class ConfigLoader {
     private static Properties properties = new Properties();
     private static boolean loaded = false;
-    
+
     /**
      * Load configuration from properties file
      */
     public static void loadConfig() {
         if (!loaded) {
-            try (InputStream input = new FileInputStream(System.getProperty("user.dir") 
+            try (InputStream input = new FileInputStream(System.getProperty("user.dir")
                     + File.separator + "config.properties")) {
                 properties.load(input);
                 loaded = true;
@@ -41,7 +41,7 @@ public class ConfigLoader {
             }
         }
     }
-    
+
     /**
      * Get property value
      * 
@@ -49,16 +49,13 @@ public class ConfigLoader {
      * @return Property value
      */
     public static String getProperty(String key) {
-        if (!loaded) {
-            loadConfig();
-        }
-        return properties.getProperty(key);
+        return getProperty(key, null);
     }
-    
+
     /**
      * Get property value with default
      * 
-     * @param key Property key
+     * @param key          Property key
      * @param defaultValue Default value if property is not found
      * @return Property value or default
      */
@@ -66,6 +63,22 @@ public class ConfigLoader {
         if (!loaded) {
             loadConfig();
         }
+
+        // 1. Try System Property
+        String value = System.getProperty(key);
+        if (value != null) {
+            return value;
+        }
+
+        // 2. Try Environment Variable (mapping dots to underscores and converting to
+        // uppercase)
+        String envKey = key.replace('.', '_').toUpperCase();
+        value = System.getenv(envKey);
+        if (value != null) {
+            return value;
+        }
+
+        // 3. Fallback to properties file
         return properties.getProperty(key, defaultValue);
     }
 }

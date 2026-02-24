@@ -18,5 +18,6 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(events.service.EventService.class);
         resources.add(events.util.CORSFilter.class);
+        resources.add(events.util.SecurityFilter.class);
     }
 }

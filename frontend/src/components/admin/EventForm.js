@@ -3,8 +3,8 @@ import FormField from '../common/FormField';
 
 function EventForm({ form, updateForm, eventTypes, statusOptions, currencyOptions }) {
   return (
-    <div className="event-form">
-      <div className="form-grid">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
         <FormField
           id="name"
           label="Event Name*"
@@ -120,8 +120,7 @@ function EventForm({ form, updateForm, eventTypes, statusOptions, currencyOption
         />
       </div>
 
-      {/* Description field is separate to allow for larger text input */}
-      <div style={{ marginTop: '15px' }}>
+      <div className="mt-5">
         <FormField
           id="description"
           label="Description"

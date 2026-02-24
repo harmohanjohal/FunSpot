@@ -1,0 +1,61 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=/api/eventapp
+        - REACT_APP_IMAGE_SERVICE_URL=/api/imageservice
+        - REACT_APP_WEB_SERVICES_URL=/api/webservices
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    depends_on:
+      - eventapp
+      - imageservice
+      - webservices
+
+  eventapp:
+    build:
+      context: ./eventapp
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    volumes:
+      - event-data:/app/data
+    networks:
+      - app-network
+    environment:
+      - JSON_FILE_PATH=${JSON_FILE_PATH}
+      - WEBSERVICES_URL=${WEBSERVICES_URL}
+      - IMAGESERVICE_URL=${IMAGESERVICE_URL}
+
+  webservices:
+    build:
+      context: ./webservices
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    networks:
+      - app-network
+    environment:
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+
+  imageservice:
+    build:
+      context: ./imageservice
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8080"
+    networks:
+      - app-network
+    environment:
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  event-data:

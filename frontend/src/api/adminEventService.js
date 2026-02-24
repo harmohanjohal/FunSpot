@@ -1,5 +1,7 @@
 // Admin API service for event management
-const API_BASE_URL = 'http://localhost:8081/api';
+import { API_CONFIG } from '../config';
+const API_BASE_URL = API_CONFIG.BASE_URL;
+const IMAGE_API_BASE_URL = API_CONFIG.IMAGE_SERVICE_URL;
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {

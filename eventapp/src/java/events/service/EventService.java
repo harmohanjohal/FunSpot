@@ -42,11 +42,11 @@ public class EventService {
     // Base URLs for external services
     private static final String SERVICES_BASE_URL = System.getenv("WEBSERVICES_URL") != null
             ? System.getenv("WEBSERVICES_URL")
-            : "http://localhost:8081/WebServices/api";
+            : "http://localhost:8082/api";
 
     private static final String IMAGES_SERVICES_BASE_URL = System.getenv("IMAGESERVICE_URL") != null
             ? System.getenv("IMAGESERVICE_URL")
-            : "http://localhost:8081/ImageService/api";
+            : "http://localhost:8083/api";
 
     // Services used
     private final EventRepository repository;
@@ -229,7 +229,8 @@ public class EventService {
         }
     }
 
-    // GET /api/events/{id}/convertPrice?toCurrency=XYZ - convert event price to another currency
+    // GET /api/events/{id}/convertPrice?toCurrency=XYZ - convert event price to
+    // another currency
     @GET
     @Path("{id}/convertPrice")
     @Produces(MediaType.APPLICATION_JSON)
@@ -386,14 +387,14 @@ public class EventService {
 
             // List of fields that must be included
             String[] requiredFields = {
-                "title",
-                "eventType",
-                "date",
-                "location",
-                "city",
-                "totalTickets",
-                "ticketPrice",
-                "ageRating"
+                    "title",
+                    "eventType",
+                    "date",
+                    "location",
+                    "city",
+                    "totalTickets",
+                    "ticketPrice",
+                    "ageRating"
             };
 
             // Make sure all required fields exist
@@ -489,7 +490,8 @@ public class EventService {
 
             if (eventJson.has("date")) {
                 try {
-                    existingEvent.setDate(LocalDateTime.parse(eventJson.getString("date"), EventRepository.DATE_FORMATTER));
+                    existingEvent
+                            .setDate(LocalDateTime.parse(eventJson.getString("date"), EventRepository.DATE_FORMATTER));
                 } catch (DateTimeParseException e) {
                     return ErrorUtils.createErrorResponse(
                             "Invalid date format. Use ISO format (e.g., 2023-01-30T19:00:00)");
@@ -653,7 +655,8 @@ public class EventService {
             response.put("totalTicketsAvailable", totalTicketsAvailable);
             response.put("totalTicketsBooked", totalTicketsBooked);
             response.put("bookingRate", totalTicketsAvailable > 0
-                    ? (double) totalTicketsBooked / totalTicketsAvailable * 100 : 0);
+                    ? (double) totalTicketsBooked / totalTicketsAvailable * 100
+                    : 0);
 
             return response.toString();
         } catch (Exception e) {

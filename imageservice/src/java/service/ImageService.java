@@ -22,7 +22,8 @@ import java.util.Base64;
 public class ImageService {
 
     // Load API key from environment variable or config
-    private static final String PIXABAY_API_KEY = System.getenv("PIXABAY_API_KEY") != null ? System.getenv("PIXABAY_API_KEY") : "";
+    // Load API key from environment variable
+    private static final String PIXABAY_API_KEY = System.getenv("PIXABAY_API_KEY");
     private static final String PIXABAY_API_URL = "https://pixabay.com/api/";
 
     @GET
@@ -41,7 +42,8 @@ public class ImageService {
             // URL encode the search term
             String encodedSearchTerm = URLEncoder.encode(searchTerm.toLowerCase(), "UTF-8");
 
-            // Construct the Pixabay API URL with more specific parameters for better results
+            // Construct the Pixabay API URL with more specific parameters for better
+            // results
             String apiUrl = PIXABAY_API_URL
                     + "?key=" + PIXABAY_API_KEY
                     + "&q=" + encodedSearchTerm
@@ -52,7 +54,7 @@ public class ImageService {
                     + "&orientation=horizontal"
                     + "&min_width=300"
                     + "&min_height=200"
-                    + "&order=popular";       // Order by popularity for better results
+                    + "&order=popular"; // Order by popularity for better results
 
             // Create URL and open connection
             URL url = new URL(apiUrl);
@@ -71,8 +73,7 @@ public class ImageService {
 
             // Read the response
             BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream())
-            );
+                    new InputStreamReader(connection.getInputStream()));
 
             StringBuilder apiResponse = new StringBuilder();
             String line;
@@ -154,12 +155,12 @@ public class ImageService {
 
             // used to encode the string into a QR code format
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            //results in a BitMatrix representing the QR code
+            // results in a BitMatrix representing the QR code
             BitMatrix bitMatrix = qrCodeWriter.encode(qrContent.toString(), BarcodeFormat.QR_CODE, 250, 250);
 
             // Convert to image
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            //BitMatrix is converted into a PNG image using MatrixToImageWriter
+            // BitMatrix is converted into a PNG image using MatrixToImageWriter
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
 
             // Convert to Base64
@@ -173,7 +174,7 @@ public class ImageService {
             // Handle errors
             response.put("success", false);
             response.put("error", "Error generating QR code: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error generating QR code: " + e.getMessage());
         }
 
         return response.toString();

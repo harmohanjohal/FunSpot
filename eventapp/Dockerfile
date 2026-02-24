@@ -1,22 +1,17 @@
+# Build stage
+FROM maven:3.8.4-openjdk-11-slim AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+COPY web ./web
+RUN mvn clean package -DskipTests
+
+# Run stage
 FROM tomcat:9-jdk11-openjdk-slim
-
-# Remove default Tomcat applications
 RUN rm -rf /usr/local/tomcat/webapps/*
-
-# Create directory for JSON data
 RUN mkdir -p /app/data
-
-# Copy your WAR file as ROOT.war
-COPY dist/EventApp.war /usr/local/tomcat/webapps/ROOT.war
-
-# Copy JSON data file
+COPY --from=build /app/target/EventApp.war /usr/local/tomcat/webapps/ROOT.war
 COPY Events.json /app/data/
-
-# Set environment variable for JSON file path
 ENV JSON_FILE_PATH=/app/data/Events.json
-
-# Expose the port Tomcat runs on
 EXPOSE 8080
-
-# Run Tomcat
 CMD ["catalina.sh", "run"]

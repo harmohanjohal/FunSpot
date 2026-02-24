@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CityInfoService {
 
-    //External Wikipedia API being used for fact generation about host city
+    // External Wikipedia API being used for fact generation about host city
     private static final String WIKIPEDIA_API_URL = "https://en.wikipedia.org/w/api.php";
 
     public String getCityFacts(String cityName) {
@@ -37,13 +37,13 @@ public class CityInfoService {
                     + "&redirects=1"
                     + "&titles=" + encodedCityName;
 
-            //Making connection with Wikipedia
+            // Making connection with Wikipedia
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("User-Agent", "EventAppCityInfoService/1.0");
 
-            //Checking if connetion worked
+            // Checking if connetion worked
             int responseCode = connection.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -79,7 +79,7 @@ public class CityInfoService {
         } catch (Exception e) {
             response.put("success", false);
             response.put("error", "Error fetching city information: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error fetching city information: " + e.getMessage());
         }
 
         return response.toString();
@@ -126,7 +126,7 @@ public class CityInfoService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error extracting facts: " + e.getMessage());
         }
 
         return facts;

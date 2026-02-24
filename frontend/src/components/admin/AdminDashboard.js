@@ -6,12 +6,12 @@ import { useAuth } from '../../context/AuthContext';
 import DashboardHeader from '../common/DashboardHeader';
 import DataCard from '../common/DataCard';
 import DataTable from '../common/DataTable';
-import LoadingSpinner from '../common/LoadingSpinner';
+import { SkeletonStatBox, SkeletonRow } from '../common/SkeletonLoader';
 
 function AdminDashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  
+
   const [dashboardData, setDashboardData] = useState({
     userCount: 0,
     eventCount: 0,
@@ -19,25 +19,25 @@ function AdminDashboard() {
     recentEvents: []
   });
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        
+
         const usersRef = collection(db, 'users');
         const userSnapshot = await getDocs(usersRef);
-        
+
         const recentUsersQuery = query(usersRef, orderBy('createdAt', 'desc'), limit(5));
         const recentUsersSnapshot = await getDocs(recentUsersQuery);
         const recentUsersData = recentUsersSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-        
+
         const eventsRef = collection(db, 'events');
         const eventSnapshot = await getDocs(eventsRef);
-        
+
         const recentEventsQuery = query(eventsRef, orderBy('createdAt', 'desc'), limit(5));
         const recentEventsSnapshot = await getDocs(recentEventsQuery);
         const recentEventsData = recentEventsSnapshot.docs.map(doc => ({
@@ -57,10 +57,10 @@ function AdminDashboard() {
         setLoading(false);
       }
     };
-    
+
     fetchDashboardData();
   }, []);
-  
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -83,10 +83,10 @@ function AdminDashboard() {
     { key: 'location', label: 'Location' },
     { key: 'status', label: 'Status' }
   ];
-  
+
   return (
-    <div className="dashboard-container">
-      <DashboardHeader 
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <DashboardHeader
         title="Admin Dashboard"
         links={[
           { to: "/admin/users", label: "Manage Users" },
@@ -94,46 +94,64 @@ function AdminDashboard() {
         ]}
         onLogout={handleLogout}
       />
-      
+
       {loading ? (
-        <LoadingSpinner message="Loading dashboard data..." />
-      ) : (
-        <>
+        <div className="space-y-8">
           <DataCard title="System Overview">
-            <div className="stats-grid">
-              <div className="stat-box">
-                <div className="stat-number">{dashboardData.userCount}</div>
-                <div className="stat-label">Total Users</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <SkeletonStatBox />
+              <SkeletonStatBox />
+            </div>
+          </DataCard>
+          <DataCard title="Recent Data">
+            <div className="w-full overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200">
+                  <SkeletonRow columns={4} />
+                  <SkeletonRow columns={4} />
+                  <SkeletonRow columns={4} />
+                </tbody>
+              </table>
+            </div>
+          </DataCard>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          <DataCard title="System Overview">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-center transition-transform hover:-translate-y-1 duration-300">
+                <div className="text-4xl font-extrabold text-blue-700 mb-2">{dashboardData.userCount}</div>
+                <div className="text-blue-600 font-medium tracking-wide uppercase text-sm">Total Users</div>
               </div>
-              <div className="stat-box">
-                <div className="stat-number">{dashboardData.eventCount}</div>
-                <div className="stat-label">Total Events</div>
+              <div className="bg-purple-50 border border-purple-100 rounded-xl p-6 text-center transition-transform hover:-translate-y-1 duration-300">
+                <div className="text-4xl font-extrabold text-purple-700 mb-2">{dashboardData.eventCount}</div>
+                <div className="text-purple-600 font-medium tracking-wide uppercase text-sm">Total Events</div>
               </div>
             </div>
           </DataCard>
-          
-          <DataCard 
+
+          <DataCard
             title="Recent Users"
-            footerAction={<Link to="/admin/users" className="btn">View All Users</Link>}
+            footerAction={<Link to="/admin/users" className="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors">View All Users</Link>}
           >
-            <DataTable 
+            <DataTable
               columns={userTableColumns}
               data={dashboardData.recentUsers}
               emptyMessage="No users found."
             />
           </DataCard>
-          
-          <DataCard 
+
+          <DataCard
             title="Recent Events"
-            footerAction={<Link to="/admin/events" className="btn">Manage Events</Link>}
+            footerAction={<Link to="/admin/events" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-sm inline-flex items-center gap-2">Manage Events</Link>}
           >
-            <DataTable 
+            <DataTable
               columns={eventTableColumns}
               data={dashboardData.recentEvents}
               emptyMessage="No events found."
             />
           </DataCard>
-        </>
+        </div>
       )}
     </div>
   );

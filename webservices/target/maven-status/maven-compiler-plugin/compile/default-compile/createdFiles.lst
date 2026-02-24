@@ -1,0 +1,9 @@
+services\currency\CurrencyService.class
+services\rest\CurrencyResource.class
+services\rest\DirectionsResource.class
+services\config\ConfigLoader.class
+services\directions\DirectionsService.class
+services\util\CORSFilter.class
+services\rest\ApplicationConfig.class
+services\util\ErrorUtils.class
+services\util\SecurityFilter.class

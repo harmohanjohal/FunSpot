@@ -1,0 +1,5 @@
+util\ErrorUtils.class
+config\ApplicationConfig.class
+service\ImageService.class
+util\SecurityFilter.class
+util\CORSFilter.class

@@ -22,7 +22,10 @@ export function AuthProvider({ children }) {
 
   function register(email, password, userData, isAdmin, adminPassword) {
     // Verify admin password if trying to register as admin
-    if (isAdmin && adminPassword !== "Super2025") {
+    // Admin password should be set in environment variable REACT_APP_ADMIN_PASS for security
+    const expectedAdminPass = process.env.REACT_APP_ADMIN_PASS || "TEMPORARY_UNSECURE_DEFAULT";
+
+    if (isAdmin && adminPassword !== expectedAdminPass) {
       return Promise.reject(new Error("Invalid admin password"));
     }
 

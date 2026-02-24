@@ -43,10 +43,15 @@ public class EventValidator {
 
         if (event.getTitle() == null || event.getTitle().trim().isEmpty()) {
             result.addError("Title cannot be empty");
-        } else if (event.getTitle().length() < 5) {
-            result.addError("Title must be at least 5 characters");
-        } else if (event.getTitle().length() > 100) {
-            result.addError("Title cannot exceed 100 characters");
+        } else {
+            // Sanitize title
+            event.setTitle(SanitizeUtils.sanitize(event.getTitle()));
+
+            if (event.getTitle().length() < 5) {
+                result.addError("Title must be at least 5 characters");
+            } else if (event.getTitle().length() > 100) {
+                result.addError("Title cannot exceed 100 characters");
+            }
         }
 
         if (event.getEventType() == null || event.getEventType().trim().isEmpty()) {
@@ -61,10 +66,14 @@ public class EventValidator {
 
         if (event.getLocation() == null || event.getLocation().trim().isEmpty()) {
             result.addError("Location cannot be empty");
+        } else {
+            event.setLocation(SanitizeUtils.sanitize(event.getLocation()));
         }
 
         if (event.getCity() == null || event.getCity().trim().isEmpty()) {
             result.addError("City cannot be empty");
+        } else {
+            event.setCity(SanitizeUtils.sanitize(event.getCity()));
         }
 
         if (event.getPostcode() == null || event.getPostcode().trim().isEmpty()) {

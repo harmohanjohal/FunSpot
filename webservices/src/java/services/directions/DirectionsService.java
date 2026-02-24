@@ -13,21 +13,21 @@ import java.net.URLEncoder;
 public class DirectionsService {
 
     // Default API key and URL - can be overridden in config.properties
-   private static final String DEFAULT_API_URL = "https://maps.googleapis.com/maps/api/directions/json";
-   private static final String DEFAULT_API_KEY = "";
-    
+    private static final String DEFAULT_API_URL = "https://maps.googleapis.com/maps/api/directions/json";
+    private static final String DEFAULT_API_KEY = "";
+
     private final String apiKey;
     private final String apiBaseUrl;
-    
+
     public DirectionsService() {
         // Load configuration with fallback to defaults
         this.apiKey = ConfigLoader.getProperty("directions.api.key", DEFAULT_API_KEY);
         this.apiBaseUrl = ConfigLoader.getProperty("directions.api.url", DEFAULT_API_URL);
-        
+
         // Log configuration (without sensitive data)
         System.out.println("DirectionsService initialized with API URL: " + apiBaseUrl);
     }
-    
+
     public String getDirections(String to, String from, String mode) {
         JSONObject response = new JSONObject();
 
@@ -37,13 +37,13 @@ public class DirectionsService {
             response.put("error", "Destination address cannot be empty");
             return response.toString();
         }
-        
+
         if (from == null || from.trim().isEmpty()) {
             response.put("success", false);
             response.put("error", "Starting address cannot be empty");
             return response.toString();
         }
-        
+
         // Validate transportation mode
         String transportMode = mode != null ? mode.toLowerCase() : "driving";
         if (!isValidTransportMode(transportMode)) {
@@ -73,8 +73,7 @@ public class DirectionsService {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // Read the response
                 BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream())
-                );
+                        new InputStreamReader(connection.getInputStream()));
 
                 StringBuilder apiResponse = new StringBuilder();
                 String line;
@@ -143,32 +142,31 @@ public class DirectionsService {
         } catch (Exception e) {
             // Simple exception handling - log and return error message
             System.err.println("Error getting directions: " + e.getMessage());
-            e.printStackTrace();
-            
+
             response.put("success", false);
             response.put("error", "Error getting directions: " + e.getMessage());
         }
 
         return response.toString();
     }
-    
+
     private boolean isValidTransportMode(String mode) {
-        return "driving".equals(mode) || 
-               "walking".equals(mode) || 
-               "bicycling".equals(mode) || 
-               "transit".equals(mode);
+        return "driving".equals(mode) ||
+                "walking".equals(mode) ||
+                "bicycling".equals(mode) ||
+                "transit".equals(mode);
     }
-    
+
     public String getDirections(String to, String from) {
         return getDirections(to, from, "driving");
     }
-    
-    public String getDirectionsToVenue(String venueName, String venueAddress, 
-                                      String city, String postcode, 
-                                      String from, String mode) {
+
+    public String getDirectionsToVenue(String venueName, String venueAddress,
+            String city, String postcode,
+            String from, String mode) {
         // Build the destination address from components
         StringBuilder destinationBuilder = new StringBuilder();
-        
+
         // Add venue address if available
         if (venueAddress != null && !venueAddress.trim().isEmpty()) {
             destinationBuilder.append(venueAddress);
@@ -176,7 +174,7 @@ public class DirectionsService {
             // Use venue name/location if address is not available
             destinationBuilder.append(venueName);
         }
-        
+
         // Add city
         if (city != null && !city.trim().isEmpty()) {
             if (destinationBuilder.length() > 0) {
@@ -184,7 +182,7 @@ public class DirectionsService {
             }
             destinationBuilder.append(city);
         }
-        
+
         // Add postcode
         if (postcode != null && !postcode.trim().isEmpty()) {
             if (destinationBuilder.length() > 0) {
@@ -192,9 +190,9 @@ public class DirectionsService {
             }
             destinationBuilder.append(postcode);
         }
-        
+
         String destinationAddress = destinationBuilder.toString();
-        
+
         // Check if we have a valid destination
         if (destinationAddress.trim().isEmpty()) {
             JSONObject response = new JSONObject();
@@ -202,7 +200,7 @@ public class DirectionsService {
             response.put("error", "Cannot determine destination address from provided information");
             return response.toString();
         }
-        
+
         // Get directions using the combined address
         return getDirections(destinationAddress, from, mode);
     }

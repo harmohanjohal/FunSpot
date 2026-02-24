@@ -1,16 +1,16 @@
 import React from 'react';
 
-function FormField({ 
-  id, 
-  label, 
-  type = 'text', 
-  value, 
-  onChange, 
+function FormField({
+  id,
+  label,
+  type = 'text',
+  value,
+  onChange,
   required = false,
   options = [],
-  error = '', 
+  error = '',
   placeholder = '',
-  className = 'form-control'
+  className = 'w-full px-4 py-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block focus:outline-none focus:ring-2 disabled:bg-gray-100 disabled:text-gray-500 transition-colors'
 }) {
   const renderField = () => {
     switch (type) {
@@ -31,7 +31,7 @@ function FormField({
             ))}
           </select>
         );
-        
+
       case 'textarea':
         return (
           <textarea
@@ -44,12 +44,12 @@ function FormField({
             placeholder={placeholder}
           />
         );
-        
+
       case 'radio':
         return (
-          <div className="radio-group">
+          <div className="flex flex-wrap gap-4 mt-2">
             {options.map(option => (
-              <label key={option.value} className="radio-label">
+              <label key={option.value} className="flex items-center gap-2 cursor-pointer group">
                 <input
                   type="radio"
                   name={id}
@@ -57,16 +57,17 @@ function FormField({
                   checked={value === option.value}
                   onChange={onChange}
                   required={required}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2 cursor-pointer"
                 />
-                <span>{option.label}</span>
+                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{option.label}</span>
               </label>
             ))}
           </div>
         );
-        
+
       case 'checkbox':
         return (
-          <div className="checkbox-field">
+          <div className="flex items-center gap-2 cursor-pointer group py-1">
             <input
               type="checkbox"
               id={id}
@@ -74,11 +75,12 @@ function FormField({
               checked={value}
               onChange={onChange}
               required={required}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
             />
-            {label && <label htmlFor={id}>{label}</label>}
+            {label && <label htmlFor={id} className="text-sm font-medium text-gray-700 group-hover:text-gray-900 cursor-pointer m-0">{label}</label>}
           </div>
         );
-        
+
       default:
         return (
           <input
@@ -98,18 +100,18 @@ function FormField({
   // For checkbox, render the label inside renderField
   if (type === 'checkbox') {
     return (
-      <div className="form-group">
+      <div className="mb-4">
         {renderField()}
-        {error && <div className="invalid-feedback">{error}</div>}
+        {error && <div className="mt-1 text-sm text-red-600 font-medium">{error}</div>}
       </div>
     );
   }
 
   return (
-    <div className="form-group">
-      {label && <label htmlFor={id}>{label}</label>}
+    <div className="mb-4">
+      {label && <label htmlFor={id} className="block mb-1.5 text-sm font-medium text-gray-700">{label}</label>}
       {renderField()}
-      {error && <div className="invalid-feedback">{error}</div>}
+      {error && <div className="mt-1 text-sm text-red-600 font-medium">{error}</div>}
     </div>
   );
 }
