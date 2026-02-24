@@ -20,7 +20,7 @@ jobs:
           command_timeout: 30m
           script: |
             # 1. Ensure project directory exists
-            if [ ! -d "~/soct-project" ]; then
+            if [ ! -d ~/soct-project ]; then
               git clone https://github.com/harmohanjohal/FunSpot.git ~/soct-project
             fi
             
