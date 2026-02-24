@@ -76,7 +76,8 @@ function HomeScreen() {
       setPage(newPage);
     } catch (err) {
       console.error('Error fetching events:', err);
-      setError('Failed to load events. Please try again.');
+      // Pass the specific error message from the service, or fall back to generic
+      setError(err.message || 'Failed to load events. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -118,15 +119,28 @@ function HomeScreen() {
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b border-gray-200 gap-4">
         <h1 className="text-4xl font-extrabold text-blue-600 m-0 tracking-tight">FunSpot</h1>
         <div className="flex gap-3">
-          <Link to="/login" className="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors text-sm shadow-sm ring-1 ring-blue-500/50">Login</Link>
-          <Link to="/register" className="px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors text-sm shadow-sm border border-gray-300">Register</Link>
+          <Link to="/login" className="btn-primary-action" style={{ margin: 0 }}>Login</Link>
+          <Link to="/register" className="btn-secondary-action">Register</Link>
         </div>
       </div>
 
       {/* Error message */}
       {error && (
-        <div className="p-4 mb-6 rounded-lg bg-red-50 border border-red-200 text-red-700 font-medium">
-          {error}
+        <div className={`p-4 mb-6 rounded-lg border font-medium ${error.includes('refused') || error.includes('not found') ? 'bg-orange-50 border-orange-200 text-orange-800' : 'bg-red-50 border-red-200 text-red-700'}`}>
+          <div className="flex items-start">
+            <svg className={`w-5 h-5 mr-3 mt-0.5 ${error.includes('refused') ? 'text-orange-600' : 'text-red-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <div>
+              <h3 className="text-sm font-bold mb-1">{error.includes('refused') ? 'Service Offline' : 'Error Loading Events'}</h3>
+              <p className="text-sm">{error}</p>
+              {error.includes('refused') && (
+                <p className="text-xs text-inherit opacity-80 mt-2 font-normal">
+                  Troubleshooting: Ensure that <strong>run_eventapp.bat</strong>, <strong>run_webservices.bat</strong>, and <strong>run_imageservice.bat</strong> are all running in separate terminal windows.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -168,35 +182,42 @@ function HomeScreen() {
                           <p className="text-sm text-gray-600 flex items-center justify-between"><strong className="text-gray-900 font-medium">Price:</strong> <span className="font-semibold text-green-600">{event.ticketPrice} {event.currency || 'USD'}</span></p>
                         </div>
 
-                        {/* Action buttons - using smaller styling */}
-                        <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-gray-100">
-                          <button
-                            onClick={() => handleGetDirections(event)}
-                            className="flex-1 min-w-0 py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-md transition-colors whitespace-nowrap"
-                          >
-                            Get Directions
-                          </button>
-
-                          {event.city && (
-                            <button
-                              onClick={() => handleCityInfo(event)}
-                              className="flex-1 min-w-0 py-2 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-md transition-colors whitespace-nowrap"
-                              title={`Information about ${event.city}`}
-                            >
-                              About City
-                            </button>
-                          )}
-
+                        {/* Action buttons - using improved custom CSS button styling */}
+                        <div className="event-actions" style={{ flexDirection: 'column', marginTop: 'auto', gap: '8px' }}>
                           <button
                             onClick={() => handleLoginToBook(event.eventId)}
-                            className="flex-shrink-0 w-full mt-2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                            className="btn-primary-action"
+                            style={{ margin: '0', width: '100%', textAlign: 'center', justifyContent: 'center' }}
                             disabled={
                               (event.totalTickets - (event.bookedTickets || 0)) <= 0 ||
                               (event.status === 'cancelled' || event.status === 'completed')
                             }
                           >
-                            Book Tickets
+                            {(event.totalTickets - (event.bookedTickets || 0)) <= 0 ? 'Sold Out' : 'Book Tickets Now'}
                           </button>
+
+                          <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
+                            <button
+                              onClick={() => handleGetDirections(event)}
+                              className="btn-secondary-action"
+                              style={{ flex: 1, justifyContent: 'center', fontSize: '12px', padding: '8px' }}
+                            >
+                              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                              Directions
+                            </button>
+
+                            {event.city && (
+                              <button
+                                onClick={() => handleCityInfo(event)}
+                                className="btn-secondary-action"
+                                style={{ flex: 1, justifyContent: 'center', fontSize: '12px', padding: '8px' }}
+                                title={`Information about ${event.city}`}
+                              >
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                {event.city} Info
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -227,7 +248,8 @@ function HomeScreen() {
                 <p className="text-gray-500 text-lg mb-4">No events found matching your search criteria.</p>
                 <button
                   onClick={() => handleSearch({})}
-                  className="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors shadow-sm"
+                  className="btn-primary-action"
+                  style={{ margin: 0 }}
                 >
                   Show All Events
                 </button>

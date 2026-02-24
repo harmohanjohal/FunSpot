@@ -309,21 +309,20 @@ function EventManagement() {
   ];
 
   const renderActions = (event) => (
-    <>
+    <div style={{ display: 'flex', gap: '8px' }}>
       <button
         onClick={() => handleEditEvent(event)}
-        className="btn btn-secondary"
-        style={{ marginRight: '5px' }}
+        className="btn-secondary-action py-1 px-3 text-xs"
       >
         Edit
       </button>
       <button
         onClick={() => handleDeleteEvent(event.eventId)}
-        className="btn btn-danger"
+        className="btn-danger-action py-1 px-3 text-xs"
       >
         Delete
       </button>
-    </>
+    </div>
   );
 
   return (
@@ -353,7 +352,7 @@ function EventManagement() {
         title={
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h3 className="text-lg font-bold text-gray-800 m-0">Event List</h3>
-            <button onClick={handleAddEvent} className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-sm inline-flex items-center gap-2">
+            <button onClick={handleAddEvent} className="btn-primary-action inline-flex items-center gap-2" style={{ margin: 0 }}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
               Add New Event
             </button>
@@ -371,57 +370,22 @@ function EventManagement() {
               actions={renderActions}
             />
 
-            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-lg">
-              <div className="flex flex-1 justify-between sm:hidden">
-                <button
-                  onClick={() => fetchEvents('prev')}
-                  disabled={page === 1}
-                  className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                <button
-                  onClick={() => fetchEvents('next')}
-                  disabled={!hasMore}
-                  className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </div>
-              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Showing page <span className="font-medium">{page}</span>
-                  </p>
-                </div>
-                <div>
-                  <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                    <button
-                      onClick={() => fetchEvents('prev')}
-                      disabled={page === 1}
-                      className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span className="sr-only">Previous</span>
-                      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
-                      </svg>
-                    </button>
-                    <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
-                      {page}
-                    </span>
-                    <button
-                      onClick={() => fetchEvents('next')}
-                      disabled={!hasMore}
-                      className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span className="sr-only">Next</span>
-                      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                      </svg>
-                    </button>
-                  </nav>
-                </div>
-              </div>
+            <div className="flex justify-center items-center gap-4 mt-8">
+              <button
+                onClick={() => fetchEvents('prev')}
+                disabled={page === 1}
+                className="btn-secondary-action bg-white border border-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <span className="text-sm font-medium text-gray-600 bg-gray-50 px-4 py-2 rounded-md border border-gray-200">Page {page}</span>
+              <button
+                onClick={() => fetchEvents('next')}
+                disabled={!hasMore}
+                className="btn-secondary-action bg-white border border-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
             </div>
           </>
         )}

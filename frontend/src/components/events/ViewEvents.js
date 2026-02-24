@@ -131,12 +131,12 @@ function ViewEvents() {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h2>Events</h2>
-        <div className="nav-links">
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/profile">Profile</Link>
-          <button onClick={handleLogout} className="btn btn-secondary">Logout</button>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-xl shadow-sm mb-8 mt-4 gap-4" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)', boxShadow: 'var(--shadow-md)', borderWidth: '1px' }}>
+        <h2 className="m-0" style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-main)' }}>Events</h2>
+        <div className="flex flex-wrap gap-3 items-center">
+          <Link to="/dashboard" className="btn-secondary-action py-2">Dashboard</Link>
+          <Link to="/profile" className="btn-secondary-action py-2">Profile</Link>
+          <button onClick={handleLogout} className="btn-secondary-action py-2" style={{ color: '#dc2626', borderColor: '#fca5a5', backgroundColor: '#fef2f2' }}>Logout</button>
         </div>
       </div>
 
@@ -211,48 +211,52 @@ function ViewEvents() {
                         </div>
                       </div>
 
-                      <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
-                        {/* Smaller action buttons */}
+                      <div className="event-actions">
+                        {/* Modern action buttons using App.css */}
                         <button
                           onClick={() => handleGetDirections(event)}
-                          className="action-button secondary"
+                          className="btn-secondary-action"
                         >
+                          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                           Get Directions
                         </button>
 
                         <AboutCityButton
                           city={event.city}
-                          className="action-button secondary"
-                        />
+                          className="btn-secondary-action"
+                        >
+                          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                          {event.city} Info
+                        </AboutCityButton>
 
                         <button
                           onClick={() => handleBookEvent(event.eventId)}
-                          className="action-button primary"
+                          className="btn-primary-action"
                           disabled={
                             (event.totalTickets - (event.bookedTickets || 0)) <= 0 ||
                             (event.status === 'cancelled' || event.status === 'completed')
                           }
                         >
-                          Book Tickets
+                          {(event.totalTickets - (event.bookedTickets || 0)) <= 0 ? 'Sold Out' : 'Book Tickets'}
                         </button>
                       </div>
                     </div>
                   </div>
                 ))}
 
-                <div className="pagination">
+                <div className="flex justify-center items-center gap-4 mt-8">
                   <button
                     onClick={() => handlePageChange('prev')}
                     disabled={page === 1}
-                    className="btn btn-secondary"
+                    className="btn-secondary-action bg-white border border-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Previous
                   </button>
-                  <span style={{ margin: '0 10px' }}>Page {page}</span>
+                  <span className="text-sm font-medium text-gray-600 bg-gray-50 px-4 py-2 rounded-md border border-gray-200">Page {page}</span>
                   <button
                     onClick={() => handlePageChange('next')}
                     disabled={!hasMore}
-                    className="btn btn-secondary"
+                    className="btn-secondary-action bg-white border border-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next
                   </button>
@@ -269,7 +273,7 @@ function ViewEvents() {
                 <p>No events found matching your search criteria.</p>
                 <button
                   onClick={() => handleSearch({})}
-                  className="btn btn-secondary"
+                  className="btn-primary-action"
                   style={{ marginTop: '10px' }}
                 >
                   Show All Events

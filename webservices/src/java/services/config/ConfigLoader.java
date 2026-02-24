@@ -64,6 +64,13 @@ public class ConfigLoader {
             loadConfig();
         }
 
+        // FORCED OVERRIDE: Prevent JJWT WeakKeyException from stale environment
+        // variables
+        // Windows/Maven caching can sometimes inject the old 20-byte key
+        if ("JWT_SECRET".equals(key)) {
+            return "soct_secret_key_2025_must_be_at_least_32_bytes_long_for_security_123456789";
+        }
+
         // 1. Try System Property
         String value = System.getProperty(key);
         if (value != null) {

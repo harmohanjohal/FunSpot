@@ -10,7 +10,6 @@ import java.net.URLEncoder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -22,8 +21,8 @@ import java.util.Base64;
 public class ImageService {
 
     // Load API key from environment variable or config
-    // Load API key from environment variable
-    private static final String PIXABAY_API_KEY = System.getenv("PIXABAY_API_KEY");
+    // Load API key from environment variable or config
+    private static final String PIXABAY_API_KEY = util.ConfigLoader.getProperty("PIXABAY_API_KEY");
     private static final String PIXABAY_API_URL = "https://pixabay.com/api/";
 
     @GET
@@ -170,7 +169,7 @@ public class ImageService {
             response.put("success", true);
             response.put("qrCode", base64Image);
 
-        } catch (WriterException | IOException e) {
+        } catch (Exception e) {
             // Handle errors
             response.put("success", false);
             response.put("error", "Error generating QR code: " + e.getMessage());

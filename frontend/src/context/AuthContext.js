@@ -124,8 +124,32 @@ export function AuthProvider({ children }) {
       if (user) {
         const role = await getUserRole(user.uid);
         setUserRole(role);
+
+        // Fetch JWT from Java backend to bridge Firebase auth and microservice security
+        try {
+          const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:8081/api";
+          console.log(`[AUTH] Attempting to fetch bridge token from ${apiUrl}/events/auth/token`);
+          const res = await fetch(`${apiUrl}/events/auth/token?email=${encodeURIComponent(user.email)}&role=${encodeURIComponent(role || 'user')}`);
+          console.log(`[AUTH] Token fetch status: ${res.status}`);
+
+          if (res.ok) {
+            const data = await res.json();
+            console.log(`[AUTH] Token fetch data:`, data);
+            if (data.success && data.token) {
+              console.log(`[AUTH] Successfully saved token to localStorage. First 10 chars: ${data.token.substring(0, 10)}`);
+              localStorage.setItem('token', data.token);
+            } else {
+              console.warn(`[AUTH] Token fetch succeeded but no token returned. Data:`, data);
+            }
+          } else {
+            console.error(`[AUTH] Token fetch failed with status ${res.status}`);
+          }
+        } catch (e) {
+          console.error("[AUTH] Failed to fetch backend token via try/catch", e);
+        }
       } else {
         setUserRole(null);
+        localStorage.removeItem('token');
       }
 
       setLoading(false);
