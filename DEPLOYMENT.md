@@ -1,83 +1,77 @@
-# Cloud Deployment Guide: DigitalOcean Managed Kubernetes
+# SOCT Project Deployment Guide (Single Droplet)
 
-This project uses GitHub Actions for continuous deployment to DigitalOcean Managed Kubernetes (DOKS). Follow these instructions to set up the infrastructure.
+This guide provides instructions for deploying the Event Management platform with automated SSL and CI/CD directly to a DigitalOcean Droplet.
 
-## 1. DigitalOcean Infrastructure Setup
-
-1. **Create an API Token**:
-   - Go to DigitalOcean > API > Generate New Token.
-   - Name it `docs-github-ci` and grant **Read/Write** access.
-   - Copy the token immediately.
-
-2. **Create Container Registry**:
-   - Go to Container Registry > Create.
-   - Name it `soct-registry` (or update `.github/workflows/deploy.yml` `env.REGISTRY` to match your custom name).
-
-3. **Create Kubernetes Cluster**:
-   - Go to Kubernetes > Create Cluster.
-   - Name the cluster `soct-k8s-cluster` (or update `deploy.yml` `env.CLUSTER_NAME`).
-   - Provision a basic node pool (e.g., 2 Nodes of Standard $12 droplet). Wait for it to provision.
-
-## 2. Cluster Secret Configuration
-
-You must manually inject your sensitive API keys into the Kubernetes cluster. **Never commit these to version control.**
-
-1. Install `doctl` locally and log in:
-   ```bash
-   doctl auth init
-   doctl kubernetes cluster kubeconfig save soct-k8s-cluster
-   ```
-
-2. Create the unified secret in the cluster:
-   ```bash
-   kubectl create secret generic soct-secrets \
-     --from-literal=REACT_APP_ADMIN_PASS="your-secure-admin-password" \
-     --from-literal=JWT_SECRET="long-secure-random-32-byte-string-here" \
-     --from-literal=PIXABAY_API_KEY="your-pixabay-key" \
-     --from-literal=CURRENCY_API_KEY="your-currency-key" \
-     --from-literal=DIRECTIONS_API_KEY="your-maps-key" \
-     --from-literal=WEATHER_API_KEY="your-weather-key"
-   ```
-
-## 3. GitHub Actions Configuration
-
-Go to your GitHub Repository > Settings > Secrets and Variables > Actions. 
-
-Create one Repository Secret:
-- `DIGITALOCEAN_ACCESS_TOKEN` = (Paste the token generated in Step 1.1)
-
-## 4. Deploy!
-
-The GitHub action will build the multi-stage Dockerfiles, push them to the DOCR registry, and issue a rolling restart to your live pods without downtime.
+## 1. Initial Server Requirements
+- A DigitalOcean Droplet (Ubuntu 22.04+ recommended).
+- Docker and the Docker Compose plugin installed.
+```bash
+apt-get update
+apt-get install -y docker.io docker-compose-plugin
+```
 
 ---
 
-## Alternative: Single Droplet Deployment with SSL (Docker Compose)
+## 2. Automated Deployment (CI/CD)
 
-If you are bypassing Kubernetes for a simpler, single-VM deployment (e.g., a $12 DigitalOcean Droplet) and want to secure a custom domain with **HTTPS / SSL**, follow these steps:
+The project includes a GitHub Actions pipeline for manual deployment to your server.
 
-### 1. DNS Setup
-Point your domain's A-Record (e.g., `funspot.harmohanjohal.com`) to your DigitalOcean Droplet's public IPv4 address. Wait 5-15 minutes for DNS to propagate.
+### GitHub Secrets Setup
+To use the pipeline, go to your GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions** and add the following **New repository secrets**:
 
-### 2. Configure Environment (`.env`)
-On the server, ensure your `.env` file uses the custom domain instead of `localhost` or the raw IP:
+| Secret Name | Description |
+| :--- | :--- |
+| `SSH_HOST` | The IP Address of your DigitalOcean Droplet. |
+| `SSH_USER` | The username for the server (e.g., `root`). |
+| `SSH_PRIVATE_KEY` | The **Private** SSH key used to access your Droplet. |
+| `ENV_FILE_CONTENT` | The full content of your production `.env` file. |
+
+### Branching & Deployment Workflow
+1.  **Develop**: Always commit and push your work to the `dev` branch.
+2.  **Release**: When ready to deploy, merge `dev` into `main` and push to GitHub.
+3.  **Execute**: 
+    - Go to the **Actions** tab in your GitHub repository.
+    - Select the **SSH Manual Deployment** workflow.
+    - Click **Run workflow** and select the `main` branch.
+
+The pipeline will automatically SSH into your server, pull the latest code from `main`, ensure SSL is configured, and restart your Docker containers securely.
+
+---
+
+## 3. Manual Initial Setup (Optional)
+
+If you prefer to set up the first time manually before using the pipeline:
+
+### 1. Get the Code
+```bash
+git clone https://github.com/harmohanjohal/FunSpot.git soct-project
+cd soct-project
+```
+
+### 2. Configure Environment
+Create your `.env` file based on the production template:
 ```env
 REACT_APP_API_URL=https://funspot.harmohanjohal.com/api/eventapp
 REACT_APP_IMAGE_SERVICE_URL=https://funspot.harmohanjohal.com/api/imageservice
 REACT_APP_WEB_SERVICES_URL=https://funspot.harmohanjohal.com/api/webservices
-CORS_ALLOWED_ORIGINS=http://localhost:3000,https://funspot.harmohanjohal.com
+JWT_SECRET=your_secure_random_key_here
+CORS_ALLOWED_ORIGINS=https://funspot.harmohanjohal.com
+JSON_FILE_PATH=/app/data/Events.json
 ```
 
-### 3. Generate Free SSL Certificates
-Run the initialization script. This uses Certbot to prove you own the domain and generates the Let's Encrypt certificates.
+### 3. High-Reliability SSL Launch
+Run the automated bootstrap script:
 ```bash
 chmod +x ./init-letsencrypt.sh
 ./init-letsencrypt.sh
 ```
 
-### 4. Start the Secure Stack
-Once the script finishes successfully, launch the full multi-container stack attached to the new automated SSL configuration:
+### 4. Verify Successful Launch
 ```bash
-docker-compose -f docker-compose.ssl.yml up -d --build
+docker compose -f docker-compose.ssl.yml ps
 ```
-Your application is now live, securely served over `https://`, and the certificates will automatically renew every 60 days!
+
+Visit `https://funspot.harmohanjohal.com` in your browser.
+
+> [!TIP]
+> **Cloudflare Proxy Warning**: If your first deployment fails SSL verification, ensure the Cloudflare Proxy (Orange Cloud) is **DISABLED** (Grey Cloud) temporarily. Once live, you can turn it back on.
