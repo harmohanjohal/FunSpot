@@ -25,10 +25,9 @@ echo "Waiting for Nginx to initialize..."
 sleep 5
 
 # 5. Request certificates
-docker compose -f docker-compose.ssl.yml run --rm --entrypoint "certbot" certbot \
-    certonly --webroot -w /var/www/certbot \
+docker compose -f docker-compose.ssl.yml run --rm certbot certonly --webroot -w /var/www/certbot \
     --register-unsafely-without-email --agree-tos --non-interactive \
-    -d funspot.harmohanjohal.com --force-renewal
+    -d funspot.harmohanjohal.com
 
 # 6. Swap to the REAL SSL Nginx config
 cp nginx-ssl.conf ./data/nginx.conf.temp
