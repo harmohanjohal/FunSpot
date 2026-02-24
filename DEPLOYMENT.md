@@ -52,32 +52,49 @@ The GitHub action will build the multi-stage Dockerfiles, push them to the DOCR 
 
 ---
 
-## Alternative: Single Droplet Deployment with SSL (Docker Compose)
+## Single Droplet Deployment (SSL/HTTPS)
 
-If you are bypassing Kubernetes for a simpler, single-VM deployment (e.g., a $12 DigitalOcean Droplet) and want to secure a custom domain with **HTTPS / SSL**, follow these steps:
+If you are setting up a **fresh DigitalOcean Droplet**, follow these steps to get SSL working immediately.
 
-### 1. DNS Setup
-Point your domain's A-Record (e.g., `funspot.harmohanjohal.com`) to your DigitalOcean Droplet's public IPv4 address. Wait 5-15 minutes for DNS to propagate.
+### 1. Initial Server Setup
+On your new Droplet (Ubuntu 22.04+ recommended), install the modern Docker Compose plugin:
+```bash
+apt-get update
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
 
-### 2. Configure Environment (`.env`)
-On the server, ensure your `.env` file uses the custom domain instead of `localhost` or the raw IP:
+### 2. Get the Code
+```bash
+git clone https://github.com/harmohanjohal/FunSpot.git soct-project
+cd soct-project
+```
+
+### 3. Configure Environment
+Create your `.env` file based on the production template:
 ```env
 REACT_APP_API_URL=https://funspot.harmohanjohal.com/api/eventapp
 REACT_APP_IMAGE_SERVICE_URL=https://funspot.harmohanjohal.com/api/imageservice
 REACT_APP_WEB_SERVICES_URL=https://funspot.harmohanjohal.com/api/webservices
-CORS_ALLOWED_ORIGINS=http://localhost:3000,https://funspot.harmohanjohal.com
+JWT_SECRET=your_secure_random_key_here
+CORS_ALLOWED_ORIGINS=https://funspot.harmohanjohal.com
+JSON_FILE_PATH=/app/data/Events.json
 ```
 
-### 3. Generate Free SSL Certificates
-Run the initialization script. This uses Certbot to prove you own the domain and generates the Let's Encrypt certificates.
+### 4. High-Reliability SSL Launch
+Run the automated bootstrap script. It will handle the Nginx "Challenge Mode" and fetch your certificates automatically.
+
 ```bash
 chmod +x ./init-letsencrypt.sh
 ./init-letsencrypt.sh
 ```
 
-### 4. Start the Secure Stack
-Once the script finishes successfully, launch the full multi-container stack attached to the new automated SSL configuration:
+### 5. Verify Successful Launch
+Once the script finishes, check that all services are up:
 ```bash
-docker-compose -f docker-compose.ssl.yml up -d --build
+docker compose -f docker-compose.ssl.yml ps
 ```
-Your application is now live, securely served over `https://`, and the certificates will automatically renew every 60 days!
+
+Visit `https://funspot.harmohanjohal.com` in your browser.
+
+> [!TIP]
+> **Cloudflare Proxy Warning**: During the first run of `init-letsencrypt.sh`, ensure the Cloudflare Proxy (Orange Cloud) is **DISABLED** (Grey Cloud) to allow Let's Encrypt validation. You can enable it back once the site is live.
