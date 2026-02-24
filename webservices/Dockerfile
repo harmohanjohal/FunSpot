@@ -10,7 +10,6 @@ RUN mvn clean package -DskipTests
 FROM tomcat:9-jre11-slim
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY --from=build /app/target/WebServices.war /usr/local/tomcat/webapps/ROOT.war
-COPY config.properties /usr/local/tomcat/
 
 HEALTHCHECK --interval=30s --timeout=3s \
     CMD curl -f http://localhost:8080/api/weather || exit 1
