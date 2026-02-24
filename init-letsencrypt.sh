@@ -5,75 +5,47 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains=(funspot.harmohanjohal.com)
+domain="funspot.harmohanjohal.com"
 rsa_key_size=4096
-data_path="./data/certbot"
 email="your-email@example.com" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-if [ -d "$data_path" ]; then
-  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
-  if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
-    exit
-  fi
-fi
+echo "### Phase 1: Creating necessary directories ..."
+mkdir -p ./data/certbot/conf
+mkdir -p ./data/certbot/www
 
-if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
+if [ ! -e "./data/certbot/conf/options-ssl-nginx.conf" ] || [ ! -e "./data/certbot/conf/ssl-dhparams.pem" ]; then
   echo "### Downloading recommended TLS parameters ..."
-  mkdir -p "$data_path/conf"
-  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nodejs/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
-  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nodejs/options-ssl-nginx.conf > "./data/certbot/conf/options-ssl-nginx.conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > "./data/certbot/conf/ssl-dhparams.pem"
   echo
 fi
 
-echo "### Creating dummy certificate for $domains ..."
-path="/etc/letsencrypt/live/$domains"
-docker-compose -f docker-compose.ssl.yml run --rm --entrypoint "\
-  mkdir -p /etc/letsencrypt/live/$domains && \
-  openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
-    -keyout '$path/privkey.pem' \
-    -out '$path/fullchain.pem' \
-    -subj '/CN=localhost'" certbot
+echo "### Phase 2: Starting Nginx in HTTP-only mode for ACME Challenge ..."
+# Temporarily overwrite the default nginx config with our HTTP-only challenge config
+cp nginx-init.conf ./data/nginx.conf.temp
+docker-compose -f docker-compose.ssl.yml up -d --build frontend
 echo
 
-echo "### Starting nginx ..."
-docker-compose -f docker-compose.ssl.yml up --force-recreate -d frontend
-echo
-
-echo "### Deleting dummy certificate for $domains ..."
-docker-compose -f docker-compose.ssl.yml run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/$domains && \
-  rm -Rf /etc/letsencrypt/archive/$domains && \
-  rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
-echo
-
-echo "### Requesting Let's Encrypt certificate for $domains ..."
-#Join $domains to -d args
-domain_args=""
-for domain in "${domains[@]}"; do
-  domain_args="$domain_args -d $domain"
-done
-
-# Select appropriate email arg
+echo "### Phase 3: Requesting Let's Encrypt certificates ..."
 case "$email" in
   "") email_arg="--register-unsafely-without-email" ;;
   *) email_arg="--email $email" ;;
 esac
 
-# Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
 docker-compose -f docker-compose.ssl.yml run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
     $staging_arg \
     $email_arg \
-    $domain_args \
+    -d $domain \
     --rsa-key-size $rsa_key_size \
     --agree-tos \
     --force-renewal" certbot
 echo
 
-echo "### Reloading nginx ..."
+echo "### Phase 4: Restarting Nginx in full SSL mode ..."
 docker-compose -f docker-compose.ssl.yml exec frontend nginx -s reload
 
 echo "### Success! Now bring up the rest of the backend API services securely:"
