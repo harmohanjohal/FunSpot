@@ -48,5 +48,36 @@ Create one Repository Secret:
 
 ## 4. Deploy!
 
-Simply push a commit to the `main` branch. 
 The GitHub action will build the multi-stage Dockerfiles, push them to the DOCR registry, and issue a rolling restart to your live pods without downtime.
+
+---
+
+## Alternative: Single Droplet Deployment with SSL (Docker Compose)
+
+If you are bypassing Kubernetes for a simpler, single-VM deployment (e.g., a $12 DigitalOcean Droplet) and want to secure a custom domain with **HTTPS / SSL**, follow these steps:
+
+### 1. DNS Setup
+Point your domain's A-Record (e.g., `funspot.harmohanjohal.com`) to your DigitalOcean Droplet's public IPv4 address. Wait 5-15 minutes for DNS to propagate.
+
+### 2. Configure Environment (`.env`)
+On the server, ensure your `.env` file uses the custom domain instead of `localhost` or the raw IP:
+```env
+REACT_APP_API_URL=https://funspot.harmohanjohal.com/api/eventapp
+REACT_APP_IMAGE_SERVICE_URL=https://funspot.harmohanjohal.com/api/imageservice
+REACT_APP_WEB_SERVICES_URL=https://funspot.harmohanjohal.com/api/webservices
+CORS_ALLOWED_ORIGINS=http://localhost:3000,https://funspot.harmohanjohal.com
+```
+
+### 3. Generate Free SSL Certificates
+Run the initialization script. This uses Certbot to prove you own the domain and generates the Let's Encrypt certificates.
+```bash
+chmod +x ./init-letsencrypt.sh
+./init-letsencrypt.sh
+```
+
+### 4. Start the Secure Stack
+Once the script finishes successfully, launch the full multi-container stack attached to the new automated SSL configuration:
+```bash
+docker-compose -f docker-compose.ssl.yml up -d --build
+```
+Your application is now live, securely served over `https://`, and the certificates will automatically renew every 60 days!
