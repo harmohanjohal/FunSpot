@@ -16,6 +16,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 60s
+          command_timeout: 30m
           script: |
             # 1. Ensure project directory exists
             if [ ! -d "~/soct-project" ]; then
