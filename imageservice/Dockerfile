@@ -8,6 +8,7 @@ RUN mvn clean package -DskipTests
 
 # Run stage
 FROM tomcat:9-jre11-slim
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY --from=build /app/target/ImageService.war /usr/local/tomcat/webapps/ROOT.war
 
