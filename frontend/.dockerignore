@@ -12,4 +12,3 @@ yarn-error.log*
 .gitignore
 README.md
 Dockerfile
-nginx.conf
