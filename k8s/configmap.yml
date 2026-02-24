@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eventapp-config
+data:
+  # Internal Kubernetes DNS routing
+  WEBSERVICES_URL: "http://webservices-service.default.svc.cluster.local:8080/api"
+  IMAGESERVICE_URL: "http://imageservice-service.default.svc.cluster.local:8080/api"
+  JSON_FILE_PATH: "/app/data/Events.json"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webservices-config
+data:
+  CORS_ALLOWED_ORIGINS: "*"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: imageservice-config
+data:
+  CORS_ALLOWED_ORIGINS: "*"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: event-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageservice-deployment
+  labels:
+    app: imageservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: imageservice
+  template:
+    metadata:
+      labels:
+        app: imageservice
+    spec:
+      containers:
+      - name: imageservice
+        image: registry.digitalocean.com/soct-registry/imageservice:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: imageservice-config
+        - secretRef:
+            name: soct-secrets
+        livenessProbe:
+          httpGet:
+            path: /api/images/status
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: imageservice-service
+spec:
+  selector:
+    app: imageservice
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

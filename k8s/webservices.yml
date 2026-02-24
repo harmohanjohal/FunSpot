@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webservices-deployment
+  labels:
+    app: webservices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webservices
+  template:
+    metadata:
+      labels:
+        app: webservices
+    spec:
+      containers:
+      - name: webservices
+        image: registry.digitalocean.com/soct-registry/webservices:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: webservices-config
+        - secretRef:
+            name: soct-secrets
+        livenessProbe:
+          httpGet:
+            path: /api/weather
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webservices-service
+spec:
+  selector:
+    app: webservices
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

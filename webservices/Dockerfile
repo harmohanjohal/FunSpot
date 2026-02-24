@@ -7,9 +7,13 @@ COPY web ./web
 RUN mvn clean package -DskipTests
 
 # Run stage
-FROM tomcat:9-jdk11-openjdk-slim
+FROM tomcat:9-jre11-slim
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY --from=build /app/target/WebServices.war /usr/local/tomcat/webapps/ROOT.war
 COPY config.properties /usr/local/tomcat/
+
+HEALTHCHECK --interval=30s --timeout=3s \
+    CMD curl -f http://localhost:8080/api/weather || exit 1
+
 EXPOSE 8080
 CMD ["catalina.sh", "run"]
