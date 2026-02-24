@@ -1,0 +1,89 @@
+name: CI/CD Pipeline to DigitalOcean Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: registry.digitalocean.com/soct-registry
+  CLUSTER_NAME: soct-k8s-cluster
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DO Container Registry
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Build EventApp Image
+        run: docker build -t ${{ env.REGISTRY }}/eventapp:latest ./eventapp
+      - name: Push EventApp Image
+        run: docker push ${{ env.REGISTRY }}/eventapp:latest
+
+      - name: Build WebServices Image
+        run: docker build -t ${{ env.REGISTRY }}/webservices:latest ./webservices
+      - name: Push WebServices Image
+        run: docker push ${{ env.REGISTRY }}/webservices:latest
+
+      - name: Build ImageService Image
+        run: docker build -t ${{ env.REGISTRY }}/imageservice:latest ./imageservice
+      - name: Push ImageService Image
+        run: docker push ${{ env.REGISTRY }}/imageservice:latest
+
+      - name: Build Frontend Image
+        run: |
+          docker build \
+            --build-arg REACT_APP_API_URL=/api/event \
+            --build-arg REACT_APP_IMAGE_SERVICE_URL=/api/images \
+            --build-arg REACT_APP_WEB_SERVICES_URL=/api/weather \
+            -t ${{ env.REGISTRY }}/frontend:latest ./frontend
+      - name: Push Frontend Image
+        run: docker push ${{ env.REGISTRY }}/frontend:latest
+
+  deploy:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Save KubeConfig
+        run: doctl kubernetes cluster kubeconfig save ${{ env.CLUSTER_NAME }}
+
+      - name: Deploy ConfigMap and PVC
+        run: kubectl apply -f k8s/configmap.yml
+
+      - name: Validate Kubernetes Secrets (Fail if not initialized)
+        run: |
+          if ! kubectl get secret soct-secrets > /dev/null 2>&1; then
+            echo "Error: soct-secrets is missing in the cluster! See DEPLOYMENT.md"
+            exit 1
+          fi
+
+      - name: Apply Kubernetes Deployments
+        run: |
+          kubectl apply -f k8s/eventapp.yml
+          kubectl apply -f k8s/webservices.yml
+          kubectl apply -f k8s/imageservice.yml
+          kubectl apply -f k8s/frontend.yml
+
+      - name: Force Rolling Update
+        run: |
+          kubectl rollout restart deployment eventapp-deployment
+          kubectl rollout restart deployment webservices-deployment
+          kubectl rollout restart deployment imageservice-deployment
+          kubectl rollout restart deployment frontend-deployment
