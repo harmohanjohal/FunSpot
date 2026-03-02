@@ -6,6 +6,8 @@ services:
       context: ./eventapp
     environment:
       - JSON_FILE_PATH=/app/data/Events.json
+      - WEBSERVICES_URL=http://webservices:8080/api
+      - IMAGESERVICE_URL=http://imageservice:8080/api
     volumes:
       - event-data-volume:/app/data
     restart: unless-stopped
@@ -28,9 +30,9 @@ services:
     build:
       context: ./frontend
       args:
-        REACT_APP_API_URL: ${REACT_APP_API_URL}
-        REACT_APP_IMAGE_SERVICE_URL: ${REACT_APP_IMAGE_SERVICE_URL}
-        REACT_APP_WEB_SERVICES_URL: ${REACT_APP_WEB_SERVICES_URL}
+        REACT_APP_API_URL: /api/eventapp
+        REACT_APP_IMAGE_SERVICE_URL: /api/imageservice
+        REACT_APP_WEB_SERVICES_URL: /api/webservices
     ports:
       - "80:80"
       - "443:443"
