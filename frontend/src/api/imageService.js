@@ -30,6 +30,9 @@ const handleResponse = async (response) => {
   return JSON.parse(text);
 };
 
+// Cache for promises to prevent duplicate simultaneous network requests
+const requestCache = new Map();
+
 // Get an image URL for a specific event type
 export const getEventImage = async (eventType) => {
   try {
@@ -38,8 +41,23 @@ export const getEventImage = async (eventType) => {
     }
 
     const url = `${IMAGE_API_BASE_URL}/images/event?type=${encodeURIComponent(eventType)}`;
-    const response = await fetch(url);
-    return await handleResponse(response);
+
+    // Check if we are already fetching this term
+    if (requestCache.has(url)) {
+      return await requestCache.get(url);
+    }
+
+    // Create a new promise and cache it immediately
+    const fetchPromise = fetch(url)
+      .then(handleResponse)
+      .catch(err => {
+        // Remove from cache on failure so it can be retried later
+        requestCache.delete(url);
+        throw err;
+      });
+
+    requestCache.set(url, fetchPromise);
+    return await fetchPromise;
   } catch (error) {
     console.error('Error fetching event image:', error);
     return {
