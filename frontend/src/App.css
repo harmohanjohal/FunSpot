@@ -4,43 +4,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Core Palette — Deep Charcoal */
-  --bg-page: #0c0f14;
-  --bg-elevated: #181c24;
-  --bg-card: rgba(24, 28, 36, 0.75);
-  --bg-card-solid: #181c24;
-  --bg-card-hover: rgba(24, 28, 36, 0.95);
-  --bg-input: rgba(12, 15, 20, 0.6);
+  /* ── Core Palette — Warm Beige / Cream ── */
+  --bg-page: #F5F0E8;
+  /* warm parchment/cream */
+  --bg-elevated: #EDE6D6;
+  /* slightly darker warm beige */
+  --bg-card: rgba(237, 230, 214, 0.85);
+  --bg-card-solid: #EDE6D6;
+  --bg-card-hover: rgba(226, 218, 202, 0.95);
+  --bg-input: rgba(245, 240, 232, 0.80);
 
-  /* Text */
-  --text-main: #e8eaed;
-  --text-muted: #8b919a;
-  --text-faint: #5a6069;
+  /* Text — dark warm tones for light background */
+  --text-main: #1E1A14;
+  /* dark warm brown-black */
+  --text-muted: #5C5248;
+  /* warm mid-brown */
+  --text-faint: #8B7E74;
+  /* lighter warm brown */
 
-  /* Accents — Emerald + Amber */
-  --accent-start: #10b981;
-  --accent-end: #f59e0b;
-  --accent-gradient: linear-gradient(135deg, #10b981, #f59e0b);
-  --accent-text: #34d399;
-  --accent-hover: #6ee7b7;
+  /* Accents — Teal spectrum */
+  --accent-start: #3AAFA9;
+  /* bright teal */
+  --accent-end: #2B7A78;
+  /* deeper teal */
+  --accent-gradient: linear-gradient(135deg, #3AAFA9, #2B7A78);
+  --accent-text: #2B7A78;
+  /* darker teal for readability on light bg */
+  --accent-hover: #3AAFA9;
 
   /* Semantic */
-  --success: #22c55e;
-  --success-bg: rgba(34, 197, 94, 0.1);
-  --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.1);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --info: #3b82f6;
-  --info-bg: rgba(59, 130, 246, 0.1);
+  --success: #2e7d32;
+  --success-bg: rgba(46, 125, 50, 0.1);
+  --danger: #c62828;
+  --danger-bg: rgba(198, 40, 40, 0.1);
+  --warning: #e65100;
+  --warning-bg: rgba(230, 81, 0, 0.1);
+  --info: #3AAFA9;
+  --info-bg: rgba(58, 175, 169, 0.12);
 
   /* Borders & Shadows */
-  --border: rgba(138, 143, 152, 0.12);
-  --border-strong: rgba(138, 143, 152, 0.25);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 25px rgba(16, 185, 129, 0.15);
+  --border: rgba(139, 126, 116, 0.38);
+  --border-strong: rgba(139, 126, 116, 0.60);
+  --shadow-sm: 0 1px 3px rgba(80, 60, 40, 0.12);
+  --shadow-md: 0 4px 12px rgba(80, 60, 40, 0.15);
+  --shadow-lg: 0 8px 30px rgba(80, 60, 40, 0.2);
+  --shadow-glow: 0 0 25px rgba(58, 175, 169, 0.18);
 
   /* Radius */
   --radius-sm: 0.375rem;
@@ -49,8 +57,8 @@
   --radius-xl: 1.25rem;
 
   /* Glass */
-  --glass-bg: rgba(24, 28, 36, 0.65);
-  --glass-border: rgba(138, 143, 152, 0.1);
+  --glass-bg: rgba(245, 240, 232, 0.75);
+  --glass-border: rgba(58, 175, 169, 0.18);
   --glass-blur: blur(16px);
 }
 
@@ -102,7 +110,7 @@ a:hover {
 
 .glass-card:hover {
   box-shadow: var(--shadow-glow), var(--shadow-lg);
-  border-color: rgba(124, 58, 237, 0.2);
+  border-color: rgba(58, 175, 169, 0.2);
 }
 
 /* ── Auth Forms ── */

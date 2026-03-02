@@ -211,9 +211,9 @@ function UserDashboard() {
 
       {alert.show && (
         <div className={`p-4 mb-6 rounded-lg border font-medium flex items-center gap-2`} style={{
-          background: alert.type === 'danger' ? 'var(--danger-bg)' : alert.type === 'success' ? 'var(--success-bg)' : 'rgba(16,185,129,0.1)',
-          borderColor: alert.type === 'danger' ? 'rgba(239,68,68,0.2)' : alert.type === 'success' ? 'rgba(34,197,94,0.2)' : 'rgba(16,185,129,0.2)',
-          color: alert.type === 'danger' ? '#fca5a5' : alert.type === 'success' ? '#86efac' : '#34d399'
+          background: alert.type === 'danger' ? 'var(--danger-bg)' : alert.type === 'success' ? 'var(--success-bg)' : 'rgba(58,175,169,0.1)',
+          borderColor: alert.type === 'danger' ? 'rgba(239,68,68,0.2)' : alert.type === 'success' ? 'rgba(34,197,94,0.2)' : 'rgba(58,175,169,0.2)',
+          color: alert.type === 'danger' ? '#fca5a5' : alert.type === 'success' ? '#86efac' : '#5EC8C2'
         }}>
           {alert.message}
         </div>
@@ -285,12 +285,12 @@ function UserDashboard() {
         <div className="lg:col-span-2">
           <DataCard title="Dashboard Summary">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <div className="p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300 border" style={{ background: 'rgba(16, 185, 129, 0.08)', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
-                <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399' }}>
+              <div className="p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300 border" style={{ background: 'rgba(58, 175, 169, 0.08)', borderColor: 'rgba(58, 175, 169, 0.2)' }}>
+                <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(58, 175, 169, 0.15)', color: '#3AAFA9' }}>
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
-                <h3 className="text-3xl font-bold" style={{ color: '#34d399' }}>{upcomingCount}</h3>
-                <p className="font-medium text-sm mt-1" style={{ color: '#10b981' }}>Upcoming Events</p>
+                <h3 className="text-3xl font-bold" style={{ color: '#3AAFA9' }}>{upcomingCount}</h3>
+                <p className="font-medium text-sm mt-1" style={{ color: '#2B7A78' }}>Upcoming Events</p>
               </div>
 
               <div className="p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300 border" style={{ background: 'rgba(138,143,152,0.06)', borderColor: 'var(--border-strong)' }}>
@@ -387,7 +387,7 @@ function UserDashboard() {
                 {/* Status indicator line */}
                 <div className={`absolute top-0 left-0 w-1.5 h-full`} style={{
                   background: booking.status === 'cancelled' ? '#ef4444' :
-                    booking.status === 'pending' ? '#f59e0b' : '#10b981'
+                    booking.status === 'pending' ? '#f59e0b' : '#3AAFA9'
                 }}></div>
 
                 <div className="flex-1 pl-4">
@@ -411,7 +411,7 @@ function UserDashboard() {
                     </div>
                     <div className="space-y-2">
                       <p className="flex justify-between"><strong style={{ color: 'var(--text-main)' }}>Tickets:</strong> <span>{booking.numTickets}</span></p>
-                      <p className="flex justify-between"><strong style={{ color: 'var(--text-main)' }}>Total Price:</strong> <span className="font-semibold" style={{ color: '#34d399' }}>{booking.totalPrice} {booking.currency}</span></p>
+                      <p className="flex justify-between"><strong style={{ color: 'var(--text-main)' }}>Total Price:</strong> <span className="font-semibold" style={{ color: '#3AAFA9' }}>{booking.totalPrice} {booking.currency}</span></p>
                     </div>
                   </div>
 

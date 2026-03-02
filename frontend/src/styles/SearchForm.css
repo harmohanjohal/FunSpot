@@ -50,7 +50,7 @@
 .search-input:focus {
   border-color: var(--accent-start);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px rgba(58, 175, 169, 0.2);
 }
 
 .search-input::placeholder {
@@ -73,7 +73,7 @@
 .search-select:focus {
   border-color: var(--accent-start);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px rgba(58, 175, 169, 0.2);
 }
 
 .search-select option {
@@ -91,12 +91,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 12px rgba(58, 175, 169, 0.2);
 }
 
 .search-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 6px 20px rgba(58, 175, 169, 0.35);
   filter: brightness(1.1);
 }
 
@@ -182,7 +182,7 @@
 .search-field select:focus {
   border-color: var(--accent-start);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px rgba(58, 175, 169, 0.2);
 }
 
 .loading,
@@ -226,7 +226,7 @@
 .event-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-glow), var(--shadow-lg);
-  border-color: rgba(16, 185, 129, 0.2);
+  border-color: rgba(58, 175, 169, 0.2);
 }
 
 .event-title {
@@ -278,7 +278,7 @@
 
 .action-button.primary:hover {
   filter: brightness(1.1);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px rgba(58, 175, 169, 0.25);
 }
 
 .action-button.secondary {

@@ -123,10 +123,10 @@ function SearchForm({ onSearch, isLoading }) {
             />
           </div>
 
-          <div className="flex gap-2 w-full md:w-auto">
+          <div className="flex gap-2 w-full md:w-auto mb-4">
             <button
               type="submit"
-              className="flex-1 md:flex-none px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm disabled:opacity-50 h-[42px]"
+              className="flex-1 md:flex-none px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-50 h-[42px]"
               disabled={isLoading}
             >
               {isLoading ? 'Searching...' : 'Search'}
@@ -134,7 +134,7 @@ function SearchForm({ onSearch, isLoading }) {
 
             <button
               type="button"
-              className="flex-none px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors border border-gray-200 h-[42px]"
+              className="flex-none px-6 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 font-semibold rounded-lg transition-colors border border-amber-200 h-[42px]"
               onClick={handleReset}
             >
               Reset
@@ -145,7 +145,7 @@ function SearchForm({ onSearch, isLoading }) {
         <div className="flex justify-end pt-1">
           <button
             type="button"
-            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1"
+            className="text-sm font-semibold text-teal-700 hover:text-teal-900 transition-colors flex items-center gap-1"
             onClick={toggleAdvancedMode}
           >
             {advancedMode ? (
@@ -157,7 +157,7 @@ function SearchForm({ onSearch, isLoading }) {
         </div>
 
         {advancedMode && (
-          <div className="p-5 bg-gray-50 border border-gray-100 rounded-xl space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="p-5 border rounded-xl space-y-4 animate-in fade-in slide-in-from-top-4 duration-300" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)' }}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <FormField
                 id="startDate"
@@ -227,7 +227,7 @@ function SearchForm({ onSearch, isLoading }) {
               />
             </div>
 
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-4 border-t border-gray-200 mt-4 gap-4">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between pt-4 mt-4 gap-4" style={{ borderTop: '1px solid var(--border)' }}>
               <div className="flex items-center">
                 <FormField
                   id="hasFreeTickets"
@@ -240,7 +240,7 @@ function SearchForm({ onSearch, isLoading }) {
 
               <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                 <div className="flex items-center gap-2">
-                  <label htmlFor="sortBy" className="text-sm font-medium text-gray-700 whitespace-nowrap">Sort By:</label>
+                  <label htmlFor="sortBy" className="text-sm font-semibold whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>Sort By:</label>
                   <div className="w-32">
                     <FormField
                       id="sortBy"
@@ -253,7 +253,7 @@ function SearchForm({ onSearch, isLoading }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <label htmlFor="sortOrder" className="text-sm font-medium text-gray-700 whitespace-nowrap">Order:</label>
+                  <label htmlFor="sortOrder" className="text-sm font-semibold whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>Order:</label>
                   <div className="w-32">
                     <FormField
                       id="sortOrder"

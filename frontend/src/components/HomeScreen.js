@@ -145,8 +145,8 @@ function HomeScreen() {
 
       {/* Main content */}
       <div className="w-full">
-        <div className="mb-10 p-6 rounded-xl border border-slate-700/30" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)' }}>
-          <h2 className="text-2xl font-bold text-slate-100 mb-6">Find Events</h2>
+        <div className="mb-10 p-6 rounded-xl border" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)', borderColor: 'var(--border)' }}>
+          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-main)' }}>Find Events</h2>
           <SearchForm onSearch={handleSearch} isLoading={loading} />
         </div>
 
@@ -159,7 +159,7 @@ function HomeScreen() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                   {events.map(event => (
-                    <div key={event.eventId} className="flex flex-col rounded-xl overflow-hidden border border-slate-700/30 transform hover:-translate-y-1 transition-all duration-300" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)' }}>
+                    <div key={event.eventId} className="flex flex-col rounded-xl overflow-hidden border transform hover:-translate-y-1 transition-all duration-300" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)', borderColor: 'var(--border)' }}>
                       {/* Event image */}
                       <div className="w-full h-48 overflow-hidden relative group">
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
@@ -172,13 +172,13 @@ function HomeScreen() {
                       </div>
 
                       <div className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold text-slate-100 mb-3 truncate" title={event.title}>{event.title}</h3>
+                        <h3 className="text-lg font-bold mb-3 truncate" style={{ color: 'var(--text-main)' }} title={event.title}>{event.title}</h3>
 
                         <div className="flex-grow space-y-2 mb-5">
-                          <p className="text-sm text-slate-400 flex items-center justify-between"><strong className="text-slate-200 font-medium">Date:</strong> <span>{formatDate(event.date)}</span></p>
-                          <p className="text-sm text-slate-400 flex items-center justify-between"><strong className="text-slate-200 font-medium">Location:</strong> <span className="text-right truncate max-w-[60%]">{event.location}</span></p>
-                          <p className="text-sm text-slate-400 flex items-center justify-between"><strong className="text-slate-200 font-medium">Type:</strong> <span className="bg-emerald-500/15 text-emerald-300 px-2 py-0.5 rounded-full text-xs font-medium">{event.eventType || 'Not specified'}</span></p>
-                          <p className="text-sm text-slate-400 flex items-center justify-between"><strong className="text-slate-200 font-medium">Price:</strong> <span className="font-semibold text-emerald-400">{event.ticketPrice} {event.currency || 'USD'}</span></p>
+                          <p className="text-sm flex items-center justify-between" style={{ color: 'var(--text-muted)' }}><strong className="font-semibold" style={{ color: 'var(--text-main)' }}>Date:</strong> <span>{formatDate(event.date)}</span></p>
+                          <p className="text-sm flex items-center justify-between" style={{ color: 'var(--text-muted)' }}><strong className="font-semibold" style={{ color: 'var(--text-main)' }}>Location:</strong> <span className="text-right truncate max-w-[60%]">{event.location}</span></p>
+                          <p className="text-sm flex items-center justify-between" style={{ color: 'var(--text-muted)' }}><strong className="font-semibold" style={{ color: 'var(--text-main)' }}>Type:</strong> <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: 'rgba(58,175,169,0.12)', color: '#2B7A78' }}>{event.eventType || 'Not specified'}</span></p>
+                          <p className="text-sm flex items-center justify-between" style={{ color: 'var(--text-muted)' }}><strong className="font-semibold" style={{ color: 'var(--text-main)' }}>Price:</strong> <span className="font-bold" style={{ color: '#2B7A78' }}>{event.ticketPrice} {event.currency || 'USD'}</span></p>
                         </div>
 
                         {/* Action buttons */}
@@ -228,17 +228,17 @@ function HomeScreen() {
                   <button
                     onClick={() => handlePageChange('prev')}
                     disabled={page === 1}
-                    className="px-5 py-2.5 rounded-lg text-sm font-medium transition-all border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed"
-                    style={{ background: 'var(--bg-elevated)' }}
+                    className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
                   >
                     Previous
                   </button>
-                  <span className="text-sm font-medium text-slate-400 px-4 py-2 rounded-lg border border-slate-700" style={{ background: 'var(--bg-input)' }}>Page {page}</span>
+                  <span className="text-sm font-medium px-4 py-2 rounded-lg" style={{ color: 'var(--text-muted)', background: 'var(--bg-input)', border: '1px solid var(--border)' }}>Page {page}</span>
                   <button
                     onClick={() => handlePageChange('next')}
                     disabled={!hasMore}
-                    className="px-5 py-2.5 rounded-lg text-sm font-medium transition-all border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed"
-                    style={{ background: 'var(--bg-elevated)' }}
+                    className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
                   >
                     Next
                   </button>
