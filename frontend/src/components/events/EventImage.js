@@ -99,40 +99,50 @@ function EventImage({ eventType, eventTitle, width = "100%", height = "150px" })
             }
           }
 
-          // Extract potentially meaningful words and phrases from title
-          const commonWords = ["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by"];
-
-          // Get all unique words from title excluding common words
-          const titleWords = titleLower.split(/\s+/).filter(word =>
-            word.length > 3 && !commonWords.includes(word)
-          );
-
-          // Add event type + each meaningful word as separate search terms
-          if (currentCategory && titleWords.length > 0) {
-            titleWords.forEach(word => {
-              searchTerms.push(currentCategory + " " + word);
-            });
+          // Clean up the title by removing location info (e.g., " - London")
+          let cleanTitle = titleLower;
+          if (cleanTitle.includes(' - ')) {
+            cleanTitle = cleanTitle.split(' - ')[0];
           }
 
-          // Add first 2-3 meaningful words combined
+          // Extract potentially meaningful words and phrases from title
+          const commonWords = ["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by", "live", "tour"];
+          const titleWords = cleanTitle.split(/\s+/).filter(word =>
+            word.length >= 3 && !commonWords.includes(word)
+          ).map(word => word.replace(/[^a-z0-9]/g, '')); // remove punctuation
+
+          // PRIORITY 1: Specific Extracted Patterns (Sports VS, particular bands/sports)
+          // (Already added above if they matched)
+
+          // PRIORITY 2: First 2-3 meaningful words combined (e.g. "coldplay music")
           if (titleWords.length >= 2) {
             searchTerms.push(titleWords.slice(0, Math.min(3, titleWords.length)).join(" "));
           }
+          if (titleWords.length >= 1) {
+            searchTerms.push(titleWords[0]); // e.g., "coldplay"
+          }
+
+          // PRIORITY 3: Category + most important keyword (e.g. "concert coldplay")
+          if (currentCategory && titleWords.length > 0) {
+            searchTerms.push(currentCategory + " " + titleWords[0]);
+
+            // Add category + second keyword if available
+            if (titleWords.length > 1) {
+              searchTerms.push(currentCategory + " " + titleWords[1]);
+            }
+          }
+
+          // PRIORITY 4: Full clean title fallback
+          searchTerms.push(cleanTitle);
         }
 
-        // Always add the event type as a fallback
+        // PRIORITY 5: Just the event type
         if (eventType) {
           searchTerms.push(eventType);
         }
 
-        // If there is title but no other search terms, use it
-        if (eventTitle && searchTerms.length === 0) {
-          const words = eventTitle.split(/\s+/).slice(0, 3).join(" ");
-          searchTerms.push(words);
-        }
-
-        // Remove duplicates and limit number of search terms
-        searchTerms = [...new Set(searchTerms)].slice(0, 5);
+        // Remove duplicates and clean up
+        searchTerms = [...new Set(searchTerms)].filter(term => term && term.trim().length > 0).slice(0, 6);
 
         console.log("Search terms for image:", searchTerms);
 

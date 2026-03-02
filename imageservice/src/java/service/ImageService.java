@@ -16,9 +16,13 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Path("images")
 public class ImageService {
+
+    // In-memory cache to avoid Pixabay rate limits (100 req/min)
+    private static final ConcurrentHashMap<String, String> imageCache = new ConcurrentHashMap<>();
 
     // Load API key from environment variable or config
     // Load API key from environment variable or config
@@ -44,8 +48,33 @@ public class ImageService {
         }
 
         try {
-            // URL encode the search term
-            String encodedSearchTerm = URLEncoder.encode(searchTerm.toLowerCase(), "UTF-8");
+            // Clean up search term to get better results
+            // Often search terms look like "Coldplay - Music of the Spheres Tour -
+            // Manchester"
+            // The location name confuses Pixabay. Let's try to extract just the main event
+            // concept
+            String cleanSearchTerm = searchTerm.toLowerCase();
+
+            // If the search term has a hyphen, the first part is usually the most important
+            // (e.g. "Coldplay")
+            if (cleanSearchTerm.contains(" - ")) {
+                cleanSearchTerm = cleanSearchTerm.split(" - ")[0];
+            }
+
+            // Check cache first to avoid rate limiting
+            if (imageCache.containsKey(cleanSearchTerm)) {
+                String cachedUrl = imageCache.get(cleanSearchTerm);
+                if (cachedUrl != null && !cachedUrl.isEmpty()) {
+                    response.put("success", true);
+                    response.put("imageUrl", cachedUrl);
+                    response.put("searchTerm", searchTerm);
+                    response.put("cached", true);
+                    return response.toString();
+                }
+            }
+
+            // URL encode the cleaned search term
+            String encodedSearchTerm = URLEncoder.encode(cleanSearchTerm, "UTF-8");
 
             // Construct the Pixabay API URL with more specific parameters for better
             // results
@@ -53,13 +82,12 @@ public class ImageService {
                     + "?key=" + PIXABAY_API_KEY
                     + "&q=" + encodedSearchTerm
                     + "&image_type=photo"
-                    + "&per_page=5"
-                    + // Fetch more images to have better options
-                    "&safesearch=true"
+                    + "&per_page=10" // Fetch more images to have better options
+                    + "&safesearch=true"
                     + "&orientation=horizontal"
-                    + "&min_width=300"
-                    + "&min_height=200"
-                    + "&order=popular"; // Order by popularity for better results
+                    + "&min_width=600" // Request slightly higher quality
+                    + "&min_height=400"
+                    + "&order=relevant"; // Order by relevance instead of pure popularity
 
             // Create URL and open connection
             URL url = new URL(apiUrl);
@@ -95,15 +123,22 @@ public class ImageService {
                 // Get the first image URL (most relevant based on popularity)
                 String imageUrl = hits.getJSONObject(0).getString("webformatURL");
 
+                // Cache the result to prevent future API calls for the same term
+                imageCache.put(cleanSearchTerm, imageUrl);
+
                 // Create success response
                 response.put("success", true);
                 response.put("imageUrl", imageUrl);
                 response.put("searchTerm", searchTerm);
+                response.put("cached", false);
 
                 // Include total hits for debugging/monitoring
                 response.put("totalHits", pixabayResponse.getInt("totalHits"));
             } else {
-                // No images found
+                // No images found - cache an empty string so we don't keep asking Pixabay for a
+                // failing term
+                imageCache.put(cleanSearchTerm, "");
+
                 response.put("success", false);
                 response.put("error", "No images found for: " + searchTerm);
                 response.put("totalHits", 0);
