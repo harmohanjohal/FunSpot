@@ -87,7 +87,7 @@ function CheckoutPage() {
 
     try {
       // Call the API to convert the currency
-      const response = await convertEventPrice(event.id, newCurrency);
+      const response = await convertEventPrice(event.ticketPrice, event.currency || 'USD', newCurrency);
 
       if (response && response.success) {
         // The API returns the converted price for a single ticket

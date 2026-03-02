@@ -234,38 +234,35 @@ public class EventService {
         }
     }
 
-    // GET /api/events/{id}/convertPrice?toCurrency=XYZ - convert event price to
-    // another currency
+    // GET /api/events/convertPrice?amount=XYZ&fromCurrency=XYZ&toCurrency=XYZ -
+    // convert event price to another currency
     @GET
-    @Path("{id}/convertPrice")
+    @Path("convertPrice")
     @Produces(MediaType.APPLICATION_JSON)
     public String convertEventPrice(
-            @PathParam("id") String id,
+            @QueryParam("amount") Double amount,
+            @QueryParam("fromCurrency") String fromCurrency,
             @QueryParam("toCurrency") String toCurrency) {
 
-        // Check if inputs are valid
-        String idError = ErrorUtils.validateNotEmpty(id, "Event ID");
-        if (idError != null) {
-            return ErrorUtils.createErrorResponse(idError);
+        // Validate inputs
+        if (amount == null) {
+            return ErrorUtils.createErrorResponse("Amount is required");
         }
 
-        String currencyError = ErrorUtils.validateNotEmpty(toCurrency, "Target currency");
-        if (currencyError != null) {
-            return ErrorUtils.createErrorResponse(currencyError);
-        }
+        String fromError = ErrorUtils.validateNotEmpty(fromCurrency, "Source currency");
+        if (fromError != null)
+            return ErrorUtils.createErrorResponse(fromError);
+
+        String toError = ErrorUtils.validateNotEmpty(toCurrency, "Target currency");
+        if (toError != null)
+            return ErrorUtils.createErrorResponse(toError);
 
         try {
-            // Find the event
-            Event event = repository.findEventById(id);
-            if (event == null) {
-                return ErrorUtils.createErrorResponse("Event not found with ID: " + id);
-            }
-
-            // Call the currency microservice
+            // Call the currency microservice directly (API Gateway pattern)
             String serviceUrl = SERVICES_BASE_URL + "/currency/convert"
-                    + "?amount=" + event.getTicketPrice()
-                    + "&from=" + event.getCurrency()
-                    + "&to=" + toCurrency;
+                    + "?amount=" + amount
+                    + "&from=" + URLEncoder.encode(fromCurrency, "UTF-8")
+                    + "&to=" + URLEncoder.encode(toCurrency, "UTF-8");
 
             URL url = new URL(serviceUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -294,53 +291,58 @@ public class EventService {
         }
     }
 
-    // GET /api/events/{id}/directions - get directions to event venue
+    // GET /api/events/directions - get directions to event venue
     @GET
-    @Path("{id}/directions")
+    @Path("directions")
     @Produces(MediaType.APPLICATION_JSON)
     public String getDirectionsToEvent(
-            @PathParam("id") String id,
+            @QueryParam("venueName") String venueName,
+            @QueryParam("venueAddress") String venueAddress,
+            @QueryParam("city") String city,
+            @QueryParam("postcode") String postcode,
             @QueryParam("fromAddress") String fromAddress,
             @QueryParam("mode") String mode) {
 
-        // Check if inputs are valid
-        String idError = ErrorUtils.validateNotEmpty(id, "Event ID");
-        if (idError != null) {
-            return ErrorUtils.createErrorResponse(idError);
-        }
-
         String addressError = ErrorUtils.validateNotEmpty(fromAddress, "Starting address");
-        if (addressError != null) {
+        if (addressError != null)
             return ErrorUtils.createErrorResponse(addressError);
+
+        if ((venueName == null || venueName.trim().isEmpty()) &&
+                (venueAddress == null || venueAddress.trim().isEmpty())) {
+            return ErrorUtils.createErrorResponse("Venue name or address is required");
         }
 
         try {
-            // Find the event
-            Event event = repository.findEventById(id);
-            if (event == null) {
-                return ErrorUtils.createErrorResponse("Event not found with ID: " + id);
-            }
-
-            // Build the URL to the directions microservice
+            // Build the URL to the directions microservice directly (API Gateway pattern)
             StringBuilder serviceUrl = new StringBuilder(SERVICES_BASE_URL);
             serviceUrl.append("/directions/venue");
-            serviceUrl.append("?venueName=").append(URLEncoder.encode(event.getLocation(), "UTF-8"));
 
-            if (event.getVenueAddress() != null && !event.getVenueAddress().isEmpty()) {
-                serviceUrl.append("&venueAddress=").append(URLEncoder.encode(event.getVenueAddress(), "UTF-8"));
+            boolean firstParam = true;
+            if (venueName != null && !venueName.trim().isEmpty()) {
+                serviceUrl.append("?venueName=").append(URLEncoder.encode(venueName, "UTF-8"));
+                firstParam = false;
             }
 
-            if (event.getCity() != null && !event.getCity().isEmpty()) {
-                serviceUrl.append("&city=").append(URLEncoder.encode(event.getCity(), "UTF-8"));
+            if (venueAddress != null && !venueAddress.trim().isEmpty()) {
+                serviceUrl.append(firstParam ? "?" : "&").append("venueAddress=")
+                        .append(URLEncoder.encode(venueAddress, "UTF-8"));
+                firstParam = false;
             }
 
-            if (event.getPostcode() != null && !event.getPostcode().isEmpty()) {
-                serviceUrl.append("&postcode=").append(URLEncoder.encode(event.getPostcode(), "UTF-8"));
+            if (city != null && !city.trim().isEmpty()) {
+                serviceUrl.append(firstParam ? "?" : "&").append("city=").append(URLEncoder.encode(city, "UTF-8"));
+                firstParam = false;
             }
 
-            serviceUrl.append("&from=").append(URLEncoder.encode(fromAddress, "UTF-8"));
+            if (postcode != null && !postcode.trim().isEmpty()) {
+                serviceUrl.append(firstParam ? "?" : "&").append("postcode=")
+                        .append(URLEncoder.encode(postcode, "UTF-8"));
+                firstParam = false;
+            }
 
-            if (mode != null && !mode.isEmpty()) {
+            serviceUrl.append(firstParam ? "?" : "&").append("from=").append(URLEncoder.encode(fromAddress, "UTF-8"));
+
+            if (mode != null && !mode.trim().isEmpty()) {
                 serviceUrl.append("&mode=").append(URLEncoder.encode(mode, "UTF-8"));
             }
 
