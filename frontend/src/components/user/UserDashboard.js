@@ -193,27 +193,28 @@ function UserDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 mt-4 gap-4">
-        <h2 className="text-2xl font-bold text-gray-800 m-0">User Dashboard</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 rounded-xl mb-8 mt-4 gap-4 border" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)', borderColor: 'var(--glass-border)' }}>
+        <h2 className="text-2xl font-extrabold m-0 gradient-text">User Dashboard</h2>
         <div className="flex flex-wrap gap-3 items-center">
           <Link to="/profile" className="btn-secondary-action py-2">Profile</Link>
           <Link to="/events" className="btn-secondary-action py-2">View Events</Link>
-          <button onClick={handleLogout} className="btn-secondary-action py-2" style={{ color: '#dc2626', borderColor: '#fca5a5', backgroundColor: '#fef2f2' }}>Logout</button>
+          <button onClick={handleLogout} className="btn-danger-action py-2" style={{ padding: '8px 16px', fontSize: '13px' }}>Logout</button>
         </div>
       </div>
 
       {error && (
-        <div className="p-4 mb-6 rounded-lg bg-red-50 border border-red-200 text-red-700 font-medium flex items-center gap-2">
+        <div className="p-4 mb-6 rounded-lg border font-medium flex items-center gap-2" style={{ background: 'var(--danger-bg)', borderColor: 'rgba(239,68,68,0.2)', color: '#fca5a5' }}>
           <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           {error}
         </div>
       )}
 
       {alert.show && (
-        <div className={`p-4 mb-6 rounded-lg border font-medium flex items-center gap-2 ${alert.type === 'danger' ? 'bg-red-50 border-red-200 text-red-700' :
-          alert.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' :
-            'bg-blue-50 border-blue-200 text-blue-700'
-          }`}>
+        <div className={`p-4 mb-6 rounded-lg border font-medium flex items-center gap-2`} style={{
+          background: alert.type === 'danger' ? 'var(--danger-bg)' : alert.type === 'success' ? 'var(--success-bg)' : 'rgba(16,185,129,0.1)',
+          borderColor: alert.type === 'danger' ? 'rgba(239,68,68,0.2)' : alert.type === 'success' ? 'rgba(34,197,94,0.2)' : 'rgba(16,185,129,0.2)',
+          color: alert.type === 'danger' ? '#fca5a5' : alert.type === 'success' ? '#86efac' : '#34d399'
+        }}>
           {alert.message}
         </div>
       )}
@@ -224,54 +225,54 @@ function UserDashboard() {
           <DataCard title="User Profile">
             {loading ? (
               <div className="flex flex-col items-center animate-pulse">
-                <div className="w-24 h-24 rounded-full bg-gray-200 mb-4"></div>
-                <div className="h-6 w-32 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 w-24 bg-gray-200 rounded mb-6"></div>
-                <div className="w-full space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                  <div className="h-10 w-full bg-gray-200 rounded"></div>
-                  <div className="h-10 w-full bg-gray-200 rounded"></div>
+                <div className="w-24 h-24 rounded-full mb-4" style={{ background: 'rgba(138,143,152,0.15)' }}></div>
+                <div className="h-6 w-32 rounded mb-2" style={{ background: 'rgba(138,143,152,0.15)' }}></div>
+                <div className="h-4 w-24 rounded mb-6" style={{ background: 'rgba(138,143,152,0.15)' }}></div>
+                <div className="w-full space-y-3 p-4 rounded-xl border" style={{ background: 'var(--bg-input)', borderColor: 'var(--border)' }}>
+                  <div className="h-10 w-full rounded" style={{ background: 'rgba(138,143,152,0.15)' }}></div>
+                  <div className="h-10 w-full rounded" style={{ background: 'rgba(138,143,152,0.15)' }}></div>
                 </div>
               </div>
             ) : (
               <div className="flex flex-col items-center">
-                <div className="w-24 h-24 rounded-full text-white flex items-center justify-center text-3xl font-bold mb-4 shadow-sm border-4 border-white" style={{ backgroundColor: 'var(--primary)', boxShadow: 'var(--shadow-md)' }}>
+                <div className="w-24 h-24 rounded-full text-white flex items-center justify-center text-3xl font-bold mb-4 border-4" style={{ background: 'var(--accent-gradient)', borderColor: 'var(--bg-card-solid)', boxShadow: 'var(--shadow-md)' }}>
                   {userProfile?.name ? userProfile.name.charAt(0).toUpperCase() : 'U'}
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 text-center mb-1">
+                <h3 className="text-xl font-bold text-center mb-1" style={{ color: 'var(--text-main)' }}>
                   {userProfile?.name || currentUser?.email}
                 </h3>
 
-                <p className="text-gray-500 text-center mb-6 font-medium">
+                <p className="text-center mb-6 font-medium" style={{ color: 'var(--text-faint)' }}>
                   @{userProfile?.username || 'user'}
                 </p>
 
-                <div className="w-full space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div className="w-full space-y-3 p-4 rounded-xl border" style={{ background: 'var(--bg-input)', borderColor: 'var(--border)' }}>
                   <div className="flex items-center gap-3 text-sm">
-                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-400 shadow-sm border border-gray-100">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)', color: 'var(--text-faint)' }}>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">Email</p>
-                      <p className="text-gray-900 font-medium break-all">{currentUser?.email}</p>
+                      <p className="text-xs font-medium" style={{ color: 'var(--text-faint)' }}>Email</p>
+                      <p className="font-medium break-all" style={{ color: 'var(--text-main)' }}>{currentUser?.email}</p>
                     </div>
                   </div>
 
                   {userProfile?.phoneNumber && (
                     <div className="flex items-center gap-3 text-sm">
-                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-gray-400 shadow-sm border border-gray-100">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border)', color: 'var(--text-faint)' }}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500 font-medium">Phone</p>
-                        <p className="text-gray-900 font-medium">{userProfile.phoneNumber}</p>
+                        <p className="text-xs font-medium" style={{ color: 'var(--text-faint)' }}>Phone</p>
+                        <p className="font-medium" style={{ color: 'var(--text-main)' }}>{userProfile.phoneNumber}</p>
                       </div>
                     </div>
                   )}
                 </div>
 
                 <div className="mt-6 w-full text-center">
-                  <Link to="/profile" className="inline-block w-full px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition-colors border border-gray-200">
+                  <Link to="/profile" className="btn-secondary-action inline-block w-full py-2.5">
                     Edit Profile Information
                   </Link>
                 </div>
@@ -284,28 +285,28 @@ function UserDashboard() {
         <div className="lg:col-span-2">
           <DataCard title="Dashboard Summary">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <div className="bg-blue-50 border border-blue-100 p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300">
-                <div className="w-12 h-12 mx-auto bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-3">
+              <div className="p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300 border" style={{ background: 'rgba(16, 185, 129, 0.08)', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
+                <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399' }}>
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
-                <h3 className="text-3xl font-bold text-blue-700">{upcomingCount}</h3>
-                <p className="text-blue-600 font-medium text-sm mt-1">Upcoming Events</p>
+                <h3 className="text-3xl font-bold" style={{ color: '#34d399' }}>{upcomingCount}</h3>
+                <p className="font-medium text-sm mt-1" style={{ color: '#10b981' }}>Upcoming Events</p>
               </div>
 
-              <div className="bg-gray-50 border border-gray-200 p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300">
-                <div className="w-12 h-12 mx-auto bg-gray-200 text-gray-600 rounded-full flex items-center justify-center mb-3">
+              <div className="p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300 border" style={{ background: 'rgba(138,143,152,0.06)', borderColor: 'var(--border-strong)' }}>
+                <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(138,143,152,0.1)', color: 'var(--text-muted)' }}>
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <h3 className="text-3xl font-bold text-gray-700">{pastCount}</h3>
-                <p className="text-gray-600 font-medium text-sm mt-1">Past Events</p>
+                <h3 className="text-3xl font-bold" style={{ color: 'var(--text-muted)' }}>{pastCount}</h3>
+                <p className="font-medium text-sm mt-1" style={{ color: 'var(--text-faint)' }}>Past Events</p>
               </div>
 
-              <div className="bg-red-50 border border-red-100 p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300">
-                <div className="w-12 h-12 mx-auto bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-3">
+              <div className="p-5 rounded-xl text-center transition-transform hover:-translate-y-1 duration-300 border" style={{ background: 'rgba(239,68,68,0.06)', borderColor: 'rgba(239,68,68,0.15)' }}>
+                <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5' }}>
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <h3 className="text-3xl font-bold text-red-700">{cancelledCount}</h3>
-                <p className="text-red-600 font-medium text-sm mt-1">Cancelled</p>
+                <h3 className="text-3xl font-bold" style={{ color: '#fca5a5' }}>{cancelledCount}</h3>
+                <p className="font-medium text-sm mt-1" style={{ color: '#ef4444' }}>Cancelled</p>
               </div>
             </div>
 
@@ -322,13 +323,14 @@ function UserDashboard() {
       {/* Bookings Section */}
       <DataCard title="My Bookings">
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 mb-6 overflow-x-auto custom-scrollbar">
+        <div className="flex mb-6 overflow-x-auto custom-scrollbar border-b" style={{ borderColor: 'var(--border)' }}>
           <button
             onClick={() => setActiveTab('upcoming')}
             className={`whitespace-nowrap py-4 px-6 font-medium text-sm transition-colors border-b-2 outline-none ${activeTab === 'upcoming'
-              ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-emerald-400 text-emerald-400'
+              : 'border-transparent hover:border-gray-600'
               }`}
+            style={activeTab === 'upcoming' ? { background: 'rgba(16,185,129,0.06)' } : { color: 'var(--text-faint)' }}
           >
             Upcoming ({upcomingCount})
           </button>
@@ -336,9 +338,10 @@ function UserDashboard() {
           <button
             onClick={() => setActiveTab('past')}
             className={`whitespace-nowrap py-4 px-6 font-medium text-sm transition-colors border-b-2 outline-none ${activeTab === 'past'
-              ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-emerald-400 text-emerald-400'
+              : 'border-transparent hover:border-gray-600'
               }`}
+            style={activeTab === 'past' ? { background: 'rgba(16,185,129,0.06)' } : { color: 'var(--text-faint)' }}
           >
             Past ({pastCount})
           </button>
@@ -346,9 +349,10 @@ function UserDashboard() {
           <button
             onClick={() => setActiveTab('cancelled')}
             className={`whitespace-nowrap py-4 px-6 font-medium text-sm transition-colors border-b-2 outline-none ${activeTab === 'cancelled'
-              ? 'border-red-600 text-red-600 bg-red-50/50'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-red-400 text-red-400'
+              : 'border-transparent hover:border-gray-600'
               }`}
+            style={activeTab === 'cancelled' ? { background: 'rgba(239,68,68,0.06)' } : { color: 'var(--text-faint)' }}
           >
             Cancelled ({cancelledCount})
           </button>
@@ -356,9 +360,10 @@ function UserDashboard() {
           <button
             onClick={() => setActiveTab('all')}
             className={`whitespace-nowrap py-4 px-6 font-medium text-sm transition-colors border-b-2 outline-none ${activeTab === 'all'
-              ? 'border-gray-800 text-gray-800 bg-gray-50/50'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              ? 'border-amber-400 text-amber-400'
+              : 'border-transparent hover:border-gray-600'
               }`}
+            style={activeTab === 'all' ? { background: 'rgba(245,158,11,0.06)' } : { color: 'var(--text-faint)' }}
           >
             All ({userBookings.length})
           </button>
@@ -366,8 +371,8 @@ function UserDashboard() {
 
         {loading ? (
           <div className="w-full overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <tbody className="divide-y divide-gray-200">
+            <table className="min-w-full" style={{ borderColor: 'var(--border)' }}>
+              <tbody>
                 <SkeletonRow columns={5} />
                 <SkeletonRow columns={5} />
                 <SkeletonRow columns={5} />
@@ -377,32 +382,36 @@ function UserDashboard() {
         ) : filteredBookings.length > 0 ? (
           <div className="space-y-4">
             {filteredBookings.map((booking, index) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row gap-6 relative overflow-hidden group">
+              <div key={index} className="rounded-xl p-5 transition-shadow flex flex-col md:flex-row gap-6 relative overflow-hidden group border" style={{ background: 'var(--bg-input)', borderColor: 'var(--border)' }}>
 
                 {/* Status indicator line */}
-                <div className={`absolute top-0 left-0 w-1.5 h-full ${booking.status === 'cancelled' ? 'bg-red-500' :
-                  booking.status === 'pending' ? 'bg-orange-400' : 'bg-green-500'
-                  }`}></div>
+                <div className={`absolute top-0 left-0 w-1.5 h-full`} style={{
+                  background: booking.status === 'cancelled' ? '#ef4444' :
+                    booking.status === 'pending' ? '#f59e0b' : '#10b981'
+                }}></div>
 
                 <div className="flex-1 pl-4">
                   <div className="flex justify-between items-start mb-4">
-                    <h4 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors m-0">{booking.eventTitle}</h4>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${booking.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                      booking.status === 'pending' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'
-                      }`}>
+                    <h4 className="text-xl font-bold m-0 transition-colors" style={{ color: 'var(--text-main)' }}>{booking.eventTitle}</h4>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider" style={{
+                      background: booking.status === 'cancelled' ? 'rgba(239,68,68,0.12)' :
+                        booking.status === 'pending' ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.12)',
+                      color: booking.status === 'cancelled' ? '#fca5a5' :
+                        booking.status === 'pending' ? '#fcd34d' : '#86efac'
+                    }}>
                       {booking.status}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm text-gray-600">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm" style={{ color: 'var(--text-muted)' }}>
                     <div className="space-y-2">
-                      <p className="flex justify-between"><strong className="text-gray-800">Date:</strong> <span>{formatDate(booking.eventDate)}</span></p>
-                      <p className="flex justify-between"><strong className="text-gray-800">Location:</strong> <span>{booking.location}</span></p>
-                      <p className="flex justify-between"><strong className="text-gray-800">Ref:</strong> <span className="font-mono bg-gray-100 px-1.5 rounded">{booking.bookingReference}</span></p>
+                      <p className="flex justify-between"><strong style={{ color: 'var(--text-main)' }}>Date:</strong> <span>{formatDate(booking.eventDate)}</span></p>
+                      <p className="flex justify-between"><strong style={{ color: 'var(--text-main)' }}>Location:</strong> <span>{booking.location}</span></p>
+                      <p className="flex justify-between"><strong style={{ color: 'var(--text-main)' }}>Ref:</strong> <span className="font-mono px-1.5 rounded" style={{ background: 'var(--bg-elevated)', color: 'var(--text-faint)' }}>{booking.bookingReference}</span></p>
                     </div>
                     <div className="space-y-2">
-                      <p className="flex justify-between"><strong className="text-gray-800">Tickets:</strong> <span>{booking.numTickets}</span></p>
-                      <p className="flex justify-between"><strong className="text-gray-800">Total Price:</strong> <span className="font-semibold">{booking.totalPrice} {booking.currency}</span></p>
+                      <p className="flex justify-between"><strong style={{ color: 'var(--text-main)' }}>Tickets:</strong> <span>{booking.numTickets}</span></p>
+                      <p className="flex justify-between"><strong style={{ color: 'var(--text-main)' }}>Total Price:</strong> <span className="font-semibold" style={{ color: '#34d399' }}>{booking.totalPrice} {booking.currency}</span></p>
                     </div>
                   </div>
 
@@ -418,34 +427,35 @@ function UserDashboard() {
                           city: booking.city,
                           postcode: booking.postcode
                         }}
-                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-medium rounded transition-colors inline-flex items-center gap-1 border border-gray-200"
+                        className="btn-secondary-action text-xs py-1.5 px-3"
                         style={{}}
                       />
                     )}
 
                     {/* Show review badge if the booking has been reviewed */}
                     {booking.reviewed && (
-                      <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-bold rounded">
-                        <svg className="w-3.5 h-3.5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded border" style={{ background: 'rgba(245,158,11,0.1)', borderColor: 'rgba(245,158,11,0.2)', color: '#fcd34d' }}>
+                        <svg className="w-3.5 h-3.5" style={{ color: '#f59e0b' }} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                         {booking.review?.rating || '5'} - Reviewed
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="flex flex-row md:flex-col gap-2 md:w-36 md:border-l border-t md:border-t-0 border-gray-100 pt-4 md:pt-0 md:pl-6 justify-center">
+                <div className="flex flex-row md:flex-col gap-2 md:w-36 md:border-l border-t md:border-t-0 pt-4 md:pt-0 md:pl-6 justify-center" style={{ borderColor: 'var(--border)' }}>
                   {/* Upcoming event actions */}
                   {activeTab === 'upcoming' && booking.status !== 'cancelled' && (
                     <>
                       <button
                         onClick={() => handleViewDetails(booking)}
-                        className="flex-1 md:flex-none px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 transition-colors"
+                        className="btn-secondary-action flex-1 md:flex-none py-2 text-sm"
                       >
                         Details
                       </button>
                       <button
                         onClick={() => handleCancelBooking(booking)}
-                        className="flex-1 md:flex-none px-3 py-2 bg-white hover:bg-red-50 text-red-600 text-sm font-medium rounded-lg border border-red-200 transition-colors"
+                        className="btn-danger-action flex-1 md:flex-none py-2 text-sm"
+                        style={{ fontSize: '13px' }}
                       >
                         Cancel
                       </button>
@@ -457,13 +467,14 @@ function UserDashboard() {
                     <>
                       <button
                         onClick={() => handleViewDetails(booking)}
-                        className="flex-1 md:flex-none px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 transition-colors"
+                        className="btn-secondary-action flex-1 md:flex-none py-2 text-sm"
                       >
                         Details
                       </button>
                       <button
                         onClick={() => handleOpenReviewModal(booking)}
-                        className="flex-1 md:flex-none px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+                        className="btn-primary-action flex-1 md:flex-none py-2 text-sm"
+                        style={{ margin: 0 }}
                       >
                         Review
                       </button>
@@ -474,7 +485,7 @@ function UserDashboard() {
                   {activeTab === 'past' && booking.reviewed && (
                     <button
                       onClick={() => handleViewDetails(booking)}
-                      className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 transition-colors"
+                      className="btn-secondary-action w-full py-2 text-sm"
                     >
                       Details
                     </button>
@@ -484,7 +495,7 @@ function UserDashboard() {
                   {(activeTab === 'cancelled' || (activeTab === 'all' && booking.status === 'cancelled')) && (
                     <button
                       onClick={() => handleViewDetails(booking)}
-                      className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 transition-colors"
+                      className="btn-secondary-action w-full py-2 text-sm"
                     >
                       Details
                     </button>
@@ -495,7 +506,7 @@ function UserDashboard() {
                     <>
                       <button
                         onClick={() => handleViewDetails(booking)}
-                        className="flex-1 md:flex-none px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 transition-colors"
+                        className="btn-secondary-action flex-1 md:flex-none py-2 text-sm"
                       >
                         Details
                       </button>
@@ -504,7 +515,8 @@ function UserDashboard() {
                       {new Date(booking.eventDate) < new Date() && !booking.reviewed && (
                         <button
                           onClick={() => handleOpenReviewModal(booking)}
-                          className="flex-1 md:flex-none px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+                          className="btn-primary-action flex-1 md:flex-none py-2 text-sm"
+                          style={{ margin: 0 }}
                         >
                           Review
                         </button>
@@ -514,7 +526,8 @@ function UserDashboard() {
                       {new Date(booking.eventDate) >= new Date() && (
                         <button
                           onClick={() => handleCancelBooking(booking)}
-                          className="flex-1 md:flex-none px-3 py-2 bg-white hover:bg-red-50 text-red-600 text-sm font-medium rounded-lg border border-red-200 transition-colors"
+                          className="btn-danger-action flex-1 md:flex-none py-2 text-sm"
+                          style={{ fontSize: '13px' }}
                         >
                           Cancel
                         </button>
@@ -526,11 +539,11 @@ function UserDashboard() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 px-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-            <div className="w-16 h-16 mx-auto bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mb-4">
+          <div className="text-center py-12 px-4 rounded-xl border border-dashed" style={{ background: 'var(--bg-input)', borderColor: 'var(--border-strong)' }}>
+            <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4" style={{ background: 'rgba(138,143,152,0.1)', color: 'var(--text-faint)' }}>
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </div>
-            <p className="text-lg text-gray-600 font-medium mb-4">You don't have any {activeTab} bookings.</p>
+            <p className="text-lg font-medium mb-4" style={{ color: 'var(--text-muted)' }}>You don't have any {activeTab} bookings.</p>
             <div className="flex flex-wrap justify-center gap-3">
               {activeTab !== 'all' && (
                 <button onClick={() => setActiveTab('all')} className="btn-secondary-action">

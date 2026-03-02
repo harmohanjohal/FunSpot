@@ -131,12 +131,12 @@ function ViewEvents() {
 
   return (
     <div className="dashboard-container">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-xl shadow-sm mb-8 mt-4 gap-4" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)', boxShadow: 'var(--shadow-md)', borderWidth: '1px' }}>
-        <h2 className="m-0" style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-main)' }}>Events</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 rounded-xl mb-8 mt-4 gap-4 border border-slate-700/40" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)' }}>
+        <h2 className="m-0 gradient-text" style={{ fontSize: '1.5rem', fontWeight: '800' }}>Events</h2>
         <div className="flex flex-wrap gap-3 items-center">
           <Link to="/dashboard" className="btn-secondary-action py-2">Dashboard</Link>
           <Link to="/profile" className="btn-secondary-action py-2">Profile</Link>
-          <button onClick={handleLogout} className="btn-secondary-action py-2" style={{ color: '#dc2626', borderColor: '#fca5a5', backgroundColor: '#fef2f2' }}>Logout</button>
+          <button onClick={handleLogout} className="btn-danger-action py-2" style={{ padding: '8px 16px', fontSize: '13px' }}>Logout</button>
         </div>
       </div>
 
@@ -171,15 +171,15 @@ function ViewEvents() {
                 {events.map(event => (
                   <div key={event.eventId} className="event-card" style={{
                     marginBottom: '20px',
-                    padding: '15px',
-                    border: '1px solid #ddd',
-                    borderRadius: '5px',
-                    backgroundColor: '#f9f9f9',
+                    padding: '18px',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg)',
+                    background: 'var(--bg-input)',
                     display: 'flex',
-                    gap: '15px'
+                    gap: '18px'
                   }}>
                     {/* Event Image */}
-                    <div style={{ width: '180px', flexShrink: 0 }}>
+                    <div style={{ width: '180px', flexShrink: 0, borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
                       <EventImage
                         eventType={event.eventType}
                         eventTitle={event.title}
@@ -190,7 +190,7 @@ function ViewEvents() {
 
                     {/* Event Details */}
                     <div style={{ flex: 1 }}>
-                      <h4 style={{ marginBottom: '10px' }}>{event.title}</h4>
+                      <h4 style={{ marginBottom: '10px', color: 'var(--text-main)', fontWeight: '700' }}>{event.title}</h4>
 
                       <div className="event-details" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                         <div>
@@ -201,18 +201,17 @@ function ViewEvents() {
                         <div>
                           <p><strong>Status:</strong> <span style={{
                             textTransform: 'capitalize',
-                            color: event.status === 'cancelled' ? 'red' :
-                              event.status === 'postponed' ? 'orange' :
-                                event.status === 'completed' ? 'gray' : 'green'
+                            color: event.status === 'cancelled' ? '#fca5a5' :
+                              event.status === 'postponed' ? '#fcd34d' :
+                                event.status === 'completed' ? '#94a3b8' : '#86efac'
                           }}>{event.status || 'Upcoming'}</span></p>
                           <p><strong>Age Rating:</strong> {event.ageRating || 'Not specified'}</p>
-                          <p><strong>Ticket Price:</strong> {event.ticketPrice} {event.currency || 'USD'}</p>
+                          <p><strong>Ticket Price:</strong> <span style={{ color: '#86efac' }}>{event.ticketPrice} {event.currency || 'USD'}</span></p>
                           <p><strong>Available Tickets:</strong> {event.totalTickets - (event.bookedTickets || 0)}</p>
                         </div>
                       </div>
 
                       <div className="event-actions">
-                        {/* Modern action buttons using App.css */}
                         <button
                           onClick={() => handleGetDirections(event)}
                           className="btn-secondary-action"
@@ -248,15 +247,15 @@ function ViewEvents() {
                   <button
                     onClick={() => handlePageChange('prev')}
                     disabled={page === 1}
-                    className="btn-secondary-action bg-white border border-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-secondary-action disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     Previous
                   </button>
-                  <span className="text-sm font-medium text-gray-600 bg-gray-50 px-4 py-2 rounded-md border border-gray-200">Page {page}</span>
+                  <span className="text-sm font-medium px-4 py-2 rounded-lg border border-slate-700" style={{ color: 'var(--text-muted)', background: 'var(--bg-input)' }}>Page {page}</span>
                   <button
                     onClick={() => handlePageChange('next')}
                     disabled={!hasMore}
-                    className="btn-secondary-action bg-white border border-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-secondary-action disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     Next
                   </button>
@@ -264,17 +263,18 @@ function ViewEvents() {
               </div>
             ) : (
               <div style={{
-                padding: '20px',
+                padding: '24px',
                 textAlign: 'center',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '5px',
-                marginTop: '20px'
+                background: 'var(--bg-input)',
+                borderRadius: 'var(--radius-lg)',
+                marginTop: '20px',
+                border: '1px dashed var(--border-strong)'
               }}>
-                <p>No events found matching your search criteria.</p>
+                <p style={{ color: 'var(--text-muted)' }}>No events found matching your search criteria.</p>
                 <button
                   onClick={() => handleSearch({})}
                   className="btn-primary-action"
-                  style={{ marginTop: '10px' }}
+                  style={{ marginTop: '12px' }}
                 >
                   Show All Events
                 </button>

@@ -10,8 +10,15 @@ function FormField({
   options = [],
   error = '',
   placeholder = '',
-  className = 'w-full px-4 py-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block focus:outline-none focus:ring-2 disabled:bg-gray-100 disabled:text-gray-500 transition-colors'
+  className = 'w-full px-4 py-2.5 border border-slate-600 text-slate-100 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
 }) {
+  // Override className style for dark theme
+  const darkClassName = className.includes('bg-gray-50')
+    ? className.replace('bg-gray-50', '').replace('border-gray-300', 'border-slate-600').replace('text-gray-900', 'text-slate-100').replace('focus:ring-blue-500', 'focus:ring-emerald-500').replace('focus:border-blue-500', 'focus:border-emerald-500').replace('disabled:bg-gray-100', 'disabled:opacity-50').replace('disabled:text-gray-500', 'disabled:cursor-not-allowed')
+    : className;
+
+  const inputStyle = { background: 'var(--bg-input)' };
+
   const renderField = () => {
     switch (type) {
       case 'select':
@@ -19,7 +26,8 @@ function FormField({
           <select
             id={id}
             name={id}
-            className={className}
+            className={darkClassName}
+            style={inputStyle}
             value={value}
             onChange={onChange}
             required={required}
@@ -37,7 +45,8 @@ function FormField({
           <textarea
             id={id}
             name={id}
-            className={className}
+            className={darkClassName}
+            style={inputStyle}
             value={value}
             onChange={onChange}
             required={required}
@@ -57,9 +66,10 @@ function FormField({
                   checked={value === option.value}
                   onChange={onChange}
                   required={required}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2 cursor-pointer"
+                  className="w-4 h-4 text-emerald-500 border-slate-600 focus:ring-emerald-500 focus:ring-2 cursor-pointer"
+                  style={{ accentColor: '#10b981' }}
                 />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{option.label}</span>
+                <span className="text-sm font-medium text-slate-300 group-hover:text-slate-100">{option.label}</span>
               </label>
             ))}
           </div>
@@ -75,9 +85,10 @@ function FormField({
               checked={value}
               onChange={onChange}
               required={required}
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+              className="w-4 h-4 text-emerald-500 border-slate-600 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer"
+              style={{ accentColor: '#10b981' }}
             />
-            {label && <label htmlFor={id} className="text-sm font-medium text-gray-700 group-hover:text-gray-900 cursor-pointer m-0">{label}</label>}
+            {label && <label htmlFor={id} className="text-sm font-medium text-slate-300 group-hover:text-slate-100 cursor-pointer m-0">{label}</label>}
           </div>
         );
 
@@ -87,7 +98,8 @@ function FormField({
             type={type}
             id={id}
             name={id}
-            className={className}
+            className={darkClassName}
+            style={inputStyle}
             value={value}
             onChange={onChange}
             required={required}
@@ -102,16 +114,16 @@ function FormField({
     return (
       <div className="mb-4">
         {renderField()}
-        {error && <div className="mt-1 text-sm text-red-600 font-medium">{error}</div>}
+        {error && <div className="mt-1 text-sm text-red-400 font-medium">{error}</div>}
       </div>
     );
   }
 
   return (
     <div className="mb-4">
-      {label && <label htmlFor={id} className="block mb-1.5 text-sm font-medium text-gray-700">{label}</label>}
+      {label && <label htmlFor={id} className="block mb-1.5 text-sm font-medium text-slate-400">{label}</label>}
       {renderField()}
-      {error && <div className="mt-1 text-sm text-red-600 font-medium">{error}</div>}
+      {error && <div className="mt-1 text-sm text-red-400 font-medium">{error}</div>}
     </div>
   );
 }

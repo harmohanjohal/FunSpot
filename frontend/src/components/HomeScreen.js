@@ -76,7 +76,6 @@ function HomeScreen() {
       setPage(newPage);
     } catch (err) {
       console.error('Error fetching events:', err);
-      // Pass the specific error message from the service, or fall back to generic
       setError(err.message || 'Failed to load events. Please try again.');
     } finally {
       setLoading(false);
@@ -116,8 +115,8 @@ function HomeScreen() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-sans">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 pb-4 border-b border-gray-200 gap-4">
-        <h1 className="text-4xl font-extrabold text-blue-600 m-0 tracking-tight">FunSpot</h1>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-10 pb-5 border-b border-slate-700/50 gap-4">
+        <h1 className="text-4xl font-extrabold tracking-tight m-0 gradient-text">FunSpot</h1>
         <div className="flex gap-3">
           <Link to="/login" className="btn-primary-action" style={{ margin: 0 }}>Login</Link>
           <Link to="/register" className="btn-secondary-action">Register</Link>
@@ -126,16 +125,16 @@ function HomeScreen() {
 
       {/* Error message */}
       {error && (
-        <div className={`p-4 mb-6 rounded-lg border font-medium ${error.includes('refused') || error.includes('not found') ? 'bg-orange-50 border-orange-200 text-orange-800' : 'bg-red-50 border-red-200 text-red-700'}`}>
+        <div className={`p-4 mb-6 rounded-xl border font-medium text-sm ${error.includes('refused') || error.includes('not found') ? 'bg-amber-500/10 border-amber-500/20 text-amber-300' : 'bg-red-500/10 border-red-500/20 text-red-300'}`}>
           <div className="flex items-start">
-            <svg className={`w-5 h-5 mr-3 mt-0.5 ${error.includes('refused') ? 'text-orange-600' : 'text-red-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 mr-3 mt-0.5 ${error.includes('refused') ? 'text-amber-400' : 'text-red-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
             </svg>
             <div>
               <h3 className="text-sm font-bold mb-1">{error.includes('refused') ? 'Service Offline' : 'Error Loading Events'}</h3>
-              <p className="text-sm">{error}</p>
+              <p className="text-sm opacity-90">{error}</p>
               {error.includes('refused') && (
-                <p className="text-xs text-inherit opacity-80 mt-2 font-normal">
+                <p className="text-xs opacity-70 mt-2 font-normal">
                   Troubleshooting: Ensure that <strong>run_eventapp.bat</strong>, <strong>run_webservices.bat</strong>, and <strong>run_imageservice.bat</strong> are all running in separate terminal windows.
                 </p>
               )}
@@ -146,8 +145,8 @@ function HomeScreen() {
 
       {/* Main content */}
       <div className="w-full">
-        <div className="mb-10 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Find Events</h2>
+        <div className="mb-10 p-6 rounded-xl border border-slate-700/30" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)' }}>
+          <h2 className="text-2xl font-bold text-slate-100 mb-6">Find Events</h2>
           <SearchForm onSearch={handleSearch} isLoading={loading} />
         </div>
 
@@ -160,10 +159,10 @@ function HomeScreen() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                   {events.map(event => (
-                    <div key={event.eventId} className="flex flex-col bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 transform hover:-translate-y-1">
-                      {/* Event image - Using actual EventImage component */}
+                    <div key={event.eventId} className="flex flex-col rounded-xl overflow-hidden border border-slate-700/30 transform hover:-translate-y-1 transition-all duration-300" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)' }}>
+                      {/* Event image */}
                       <div className="w-full h-48 overflow-hidden relative group">
-                        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors z-10"></div>
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
                         <EventImage
                           eventType={event.eventType}
                           eventTitle={event.title}
@@ -173,16 +172,16 @@ function HomeScreen() {
                       </div>
 
                       <div className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold text-gray-900 mb-3 truncate" title={event.title}>{event.title}</h3>
+                        <h3 className="text-lg font-bold text-slate-100 mb-3 truncate" title={event.title}>{event.title}</h3>
 
                         <div className="flex-grow space-y-2 mb-5">
-                          <p className="text-sm text-gray-600 flex items-center justify-between"><strong className="text-gray-900 font-medium">Date:</strong> <span>{formatDate(event.date)}</span></p>
-                          <p className="text-sm text-gray-600 flex items-center justify-between"><strong className="text-gray-900 font-medium">Location:</strong> <span className="text-right truncate max-w-[60%]">{event.location}</span></p>
-                          <p className="text-sm text-gray-600 flex items-center justify-between"><strong className="text-gray-900 font-medium">Type:</strong> <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">{event.eventType || 'Not specified'}</span></p>
-                          <p className="text-sm text-gray-600 flex items-center justify-between"><strong className="text-gray-900 font-medium">Price:</strong> <span className="font-semibold text-green-600">{event.ticketPrice} {event.currency || 'USD'}</span></p>
+                          <p className="text-sm text-slate-400 flex items-center justify-between"><strong className="text-slate-200 font-medium">Date:</strong> <span>{formatDate(event.date)}</span></p>
+                          <p className="text-sm text-slate-400 flex items-center justify-between"><strong className="text-slate-200 font-medium">Location:</strong> <span className="text-right truncate max-w-[60%]">{event.location}</span></p>
+                          <p className="text-sm text-slate-400 flex items-center justify-between"><strong className="text-slate-200 font-medium">Type:</strong> <span className="bg-emerald-500/15 text-emerald-300 px-2 py-0.5 rounded-full text-xs font-medium">{event.eventType || 'Not specified'}</span></p>
+                          <p className="text-sm text-slate-400 flex items-center justify-between"><strong className="text-slate-200 font-medium">Price:</strong> <span className="font-semibold text-emerald-400">{event.ticketPrice} {event.currency || 'USD'}</span></p>
                         </div>
 
-                        {/* Action buttons - using improved custom CSS button styling */}
+                        {/* Action buttons */}
                         <div className="event-actions" style={{ flexDirection: 'column', marginTop: 'auto', gap: '8px' }}>
                           <button
                             onClick={() => handleLoginToBook(event.eventId)}
@@ -229,23 +228,25 @@ function HomeScreen() {
                   <button
                     onClick={() => handlePageChange('prev')}
                     disabled={page === 1}
-                    className="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-5 py-2.5 rounded-lg text-sm font-medium transition-all border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: 'var(--bg-elevated)' }}
                   >
                     Previous
                   </button>
-                  <span className="text-sm font-medium text-gray-600 bg-gray-50 px-4 py-2 rounded-md border border-gray-200">Page {page}</span>
+                  <span className="text-sm font-medium text-slate-400 px-4 py-2 rounded-lg border border-slate-700" style={{ background: 'var(--bg-input)' }}>Page {page}</span>
                   <button
                     onClick={() => handlePageChange('next')}
                     disabled={!hasMore}
-                    className="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-5 py-2.5 rounded-lg text-sm font-medium transition-all border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: 'var(--bg-elevated)' }}
                   >
                     Next
                   </button>
                 </div>
               </>
             ) : (
-              <div className="text-center py-16 px-4 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                <p className="text-gray-500 text-lg mb-4">No events found matching your search criteria.</p>
+              <div className="text-center py-16 px-4 rounded-xl border border-dashed border-slate-600" style={{ background: 'var(--glass-bg)' }}>
+                <p className="text-slate-400 text-lg mb-4">No events found matching your search criteria.</p>
                 <button
                   onClick={() => handleSearch({})}
                   className="btn-primary-action"
