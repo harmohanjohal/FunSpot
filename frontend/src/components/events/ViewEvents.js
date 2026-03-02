@@ -169,7 +169,7 @@ function ViewEvents() {
             {events.length > 0 ? (
               <div>
                 {events.map(event => (
-                  <div key={event.eventId} className="event-card" style={{
+                  <div key={event.id} className="event-card" style={{
                     marginBottom: '20px',
                     padding: '18px',
                     border: '1px solid var(--border)',
@@ -229,7 +229,7 @@ function ViewEvents() {
                         </AboutCityButton>
 
                         <button
-                          onClick={() => handleBookEvent(event.eventId)}
+                          onClick={() => handleBookEvent(event.id)}
                           className="btn-primary-action"
                           disabled={
                             (event.totalTickets - (event.bookedTickets || 0)) <= 0 ||

@@ -87,7 +87,7 @@ function CheckoutPage() {
 
     try {
       // Call the API to convert the currency
-      const response = await convertEventPrice(event.eventId, newCurrency);
+      const response = await convertEventPrice(event.id, newCurrency);
 
       if (response && response.success) {
         // The API returns the converted price for a single ticket
@@ -164,7 +164,7 @@ function CheckoutPage() {
       setError(null);
 
       // Call API to book tickets
-      const response = await bookEvent(event.eventId, numTickets);
+      const response = await bookEvent(event.id, numTickets);
 
       // Check if the API call was successful
       if (response && response.success) {
@@ -173,7 +173,7 @@ function CheckoutPage() {
 
         // Store booking in user's Firebase record
         await addBookingToUser(currentUser.uid, {
-          eventId: event.eventId,
+          eventId: event.id,
           eventTitle: event.title,
           eventDate: event.date,
           numTickets: numTickets,

@@ -207,7 +207,7 @@ function EventManagement() {
       setLoading(true);
 
       const eventData = {
-        eventId: editingEvent.eventId,
+        eventId: editingEvent.id,
         title: form.name,
         date: form.date + "T19:00:00",
         location: form.location,
@@ -224,7 +224,7 @@ function EventManagement() {
         durationMinutes: parseInt(form.durationMinutes) || 120
       };
 
-      const response = await updateEvent(editingEvent.eventId, eventData);
+      const response = await updateEvent(editingEvent.id, eventData);
 
       if (response.success) {
         fetchEvents();
@@ -317,7 +317,7 @@ function EventManagement() {
         Edit
       </button>
       <button
-        onClick={() => handleDeleteEvent(event.eventId)}
+        onClick={() => handleDeleteEvent(event.id)}
         className="btn-danger-action py-1 px-3 text-xs"
       >
         Delete

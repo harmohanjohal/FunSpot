@@ -19,6 +19,7 @@ const ViewEvents = lazy(() => import('./components/events/ViewEvents'));
 const BookEvent = lazy(() => import('./components/events/BookEvent'));
 const CheckoutPage = lazy(() => import('./components/events/CheckoutPage'));
 const BookingSuccessPage = lazy(() => import('./components/events/BookingSuccessPage'));
+// const DataMigration = lazy(() => import('./components/admin/DataMigration'));
 
 // Route definitions
 const routes = [
@@ -26,6 +27,7 @@ const routes = [
   { path: '/', element: <HomeScreen />, public: true },
   { path: '/login', element: <Login />, public: true },
   { path: '/register', element: <Register />, public: true },
+  // { path: '/migrate', element: <DataMigration />, public: true },
   //{ path: '/forgot-password', element: <ForgotPassword />, public: true },
 
   // User Routes

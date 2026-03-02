@@ -159,7 +159,7 @@ function HomeScreen() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                   {events.map(event => (
-                    <div key={event.eventId} className="flex flex-col rounded-xl overflow-hidden border transform hover:-translate-y-1 transition-all duration-300" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)', borderColor: 'var(--border)' }}>
+                    <div key={event.id} className="flex flex-col rounded-xl overflow-hidden border transform hover:-translate-y-1 transition-all duration-300" style={{ background: 'var(--glass-bg)', backdropFilter: 'var(--glass-blur)', borderColor: 'var(--border)' }}>
                       {/* Event image */}
                       <div className="w-full h-48 overflow-hidden relative group">
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
@@ -184,7 +184,7 @@ function HomeScreen() {
                         {/* Action buttons */}
                         <div className="event-actions" style={{ flexDirection: 'column', marginTop: 'auto', gap: '8px' }}>
                           <button
-                            onClick={() => handleLoginToBook(event.eventId)}
+                            onClick={() => handleLoginToBook(event.id)}
                             className="btn-primary-action"
                             style={{ margin: '0', width: '100%', textAlign: 'center', justifyContent: 'center' }}
                             disabled={
