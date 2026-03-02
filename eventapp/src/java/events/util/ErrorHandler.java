@@ -1,7 +1,6 @@
 package events.util;
 
 import org.json.JSONObject;
-import events.util.EventAppException;
 
 public class ErrorHandler {
 
