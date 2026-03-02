@@ -57,16 +57,16 @@ function CityInfoModal({ city, isOpen, onClose }) {
         {loading ? (
           <div className="py-8 flex justify-center"><LoadingSpinner message={`Loading information about ${city}...`} /></div>
         ) : error ? (
-          <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 font-medium">
+          <div className="p-4 rounded-lg border text-sm font-medium" style={{ background: 'var(--danger-bg)', borderColor: 'rgba(239,68,68,0.2)', color: '#fca5a5' }}>
             {error}
           </div>
         ) : cityFacts.length > 0 ? (
-          <div className="bg-blue-50/50 p-5 rounded-xl border border-blue-100">
-            <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <div className="p-5 rounded-xl border" style={{ background: 'rgba(16,185,129,0.06)', borderColor: 'rgba(16,185,129,0.15)' }}>
+            <h4 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-main)' }}>
+              <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               Interesting Facts:
             </h4>
-            <ol className="list-decimal pl-5 space-y-3 text-gray-700">
+            <ol className="list-decimal pl-5 space-y-3" style={{ color: 'var(--text-muted)' }}>
               {cityFacts.map((fact, index) => (
                 <li key={index} className="leading-relaxed">
                   {fact}
@@ -75,7 +75,7 @@ function CityInfoModal({ city, isOpen, onClose }) {
             </ol>
           </div>
         ) : (
-          <div className="p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800 font-medium text-center">
+          <div className="p-4 rounded-lg border text-center text-sm font-medium" style={{ background: 'var(--warning-bg)', borderColor: 'rgba(245,158,11,0.2)', color: '#fcd34d' }}>
             No information available for {city}.
           </div>
         )}
