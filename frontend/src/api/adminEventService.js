@@ -1,50 +1,35 @@
-// Admin API service for event management
 import { API_CONFIG } from '../config';
-const API_BASE_URL = API_CONFIG.BASE_URL;
-const IMAGE_API_BASE_URL = API_CONFIG.IMAGE_SERVICE_URL;
+import { db } from '../firebase';
+import { collection, doc, setDoc, deleteDoc, getDocs } from 'firebase/firestore';
 
-// Helper function to handle API responses
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const errorData = await response.text();
-    let errorMessage = 'An error occurred';
+// Helper function to generate statistics from Firebase events
+export const getEventStatistics = async () => {
+  try {
+    const snapshot = await getDocs(collection(db, 'events'));
+    const events = snapshot.docs.map(doc => doc.data());
 
-    try {
-      const json = JSON.parse(errorData);
-      errorMessage = json.error || errorMessage;
-    } catch (e) {
-      // If parsing fails, use the raw error text
-      errorMessage = errorData || errorMessage;
-    }
-
-    throw new Error(errorMessage);
+    return {
+      totalEvents: events.length,
+      upcomingEvents: events.filter(e => new Date(e.date) >= new Date()).length,
+      pastEvents: events.filter(e => new Date(e.date) < new Date()).length,
+      totalTicketsSource: events.reduce((sum, e) => sum + (Number(e.totalTickets) || Number(e.total_tickets) || 0), 0),
+      totalBookedTickets: events.reduce((sum, e) => sum + (Number(e.bookedTickets) || Number(e.booked_tickets) || 0), 0)
+    };
+  } catch (error) {
+    console.error('Error calculating statistics from Firebase:', error);
+    throw error;
   }
-
-  const text = await response.text();
-
-  // If the response is empty, return an empty object
-  if (!text) return {};
-
-  // Otherwise parse and return the JSON
-  return JSON.parse(text);
 };
 
 // Create a new event (admin only)
 export const createEvent = async (eventData) => {
   try {
-    console.log('Creating event with data:', eventData);
-
-    const response = await fetch(`${API_BASE_URL}/events`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(eventData)
-    });
-
-    return await handleResponse(response);
+    // Let Firestore generate a new ID
+    const newRef = doc(collection(db, 'events'));
+    await setDoc(newRef, eventData);
+    return { id: newRef.id, ...eventData, message: 'Event created successfully' };
   } catch (error) {
-    console.error('Error creating event:', error);
+    console.error('Error creating event in Firebase:', error);
     throw error;
   }
 };
@@ -52,19 +37,12 @@ export const createEvent = async (eventData) => {
 // Update an existing event (admin only)
 export const updateEvent = async (eventId, eventData) => {
   try {
-    console.log('Updating event with data:', eventData);
-
-    const response = await fetch(`${API_BASE_URL}/events/update/${eventId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(eventData)
-    });
-
-    return await handleResponse(response);
+    const docRef = doc(db, 'events', eventId);
+    // Use merge: true to avoid overwriting fields not provided
+    await setDoc(docRef, eventData, { merge: true });
+    return { id: eventId, ...eventData, message: 'Event updated successfully' };
   } catch (error) {
-    console.error('Error updating event:', error);
+    console.error('Error updating event in Firebase:', error);
     throw error;
   }
 };
@@ -72,27 +50,10 @@ export const updateEvent = async (eventId, eventData) => {
 // Delete an event (admin only)
 export const deleteEvent = async (eventId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/events/${eventId}/cancelEvent`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    return await handleResponse(response);
+    await deleteDoc(doc(db, 'events', eventId));
+    return { success: true, message: 'Event cancelled successfully' };
   } catch (error) {
-    console.error('Error deleting event:', error);
-    throw error;
-  }
-};
-
-// Get event statistics (admin only)
-export const getEventStatistics = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/events/statistics`);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Error fetching event statistics:', error);
+    console.error('Error deleting event in Firebase:', error);
     throw error;
   }
 };

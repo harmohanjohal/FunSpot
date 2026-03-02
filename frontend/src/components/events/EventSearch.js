@@ -298,7 +298,7 @@ function EventSearch() {
       {/* Events grid */}
       <div className="events-grid">
         {events.map(event => (
-          <div key={event.eventId} className="event-card">
+          <div key={event.id} className="event-card">
             <h3 className="event-title">{event.title}</h3>
 
             <div className="event-details">

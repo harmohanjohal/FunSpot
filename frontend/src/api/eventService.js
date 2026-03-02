@@ -1,7 +1,9 @@
 // eventService.js - API client for event-related functionality
 import { API_CONFIG } from '../config';
+import { db } from '../firebase';
+import { collection, getDocs, doc, getDoc, query, where, orderBy, updateDoc, increment, addDoc, deleteDoc } from 'firebase/firestore';
 
-// Base URL for all API requests
+// Base URL for all remaining Java microservices (e.g. Directions, Currency)
 const BASE_URL = API_CONFIG.BASE_URL || 'http://localhost:8081/api';
 
 const handleResponse = async (response) => {
@@ -40,11 +42,15 @@ const handleResponse = async (response) => {
 
 export const getEvents = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/events`);
-    return await handleResponse(response);
+    const eventsCol = collection(db, 'events');
+    const eventSnapshot = await getDocs(eventsCol);
+    return eventSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
   } catch (error) {
-    console.error('Error fetching events:', error);
-    throw error;
+    console.error('Error fetching events from Firebase:', error);
+    throw new Error('Failed to load events from database.');
   }
 };
 
@@ -55,38 +61,44 @@ export const getEventDetails = async (eventId) => {
   }
 
   try {
-    const response = await fetch(`${BASE_URL}/events/details?id=${eventId}`);
-    return await handleResponse(response);
+    const docRef = doc(db, 'events', eventId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    } else {
+      throw new Error('Event not found.');
+    }
   } catch (error) {
-    console.error('Error fetching event details:', error);
-    throw error;
+    console.error('Error fetching event details from Firebase:', error);
+    throw new Error('Failed to load event details.');
   }
 };
 
 
 export const searchEvents = async (criteria = {}) => {
   try {
-    // Build query string from criteria
-    const params = new URLSearchParams();
+    // For simple querying without complex indexes in Firebase,
+    // we fetch all and filter in memory since dataset is currently small.
+    // If dataset grows, we should implement proper Firestore compound queries.
+    const events = await getEvents();
 
-    Object.entries(criteria).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        params.append(key, value);
+    return events.filter(event => {
+      let matches = true;
+      if (criteria.title) {
+        matches = matches && event.title.toLowerCase().includes(criteria.title.toLowerCase());
       }
+      if (criteria.type) {
+        matches = matches && event.type === criteria.type;
+      }
+      if (criteria.city) {
+        matches = matches && event.city.toLowerCase() === criteria.city.toLowerCase();
+      }
+      return matches;
     });
-
-    const queryString = params.toString();
-    const url = `${BASE_URL}/events/search${queryString ? `?${queryString}` : ''}`;
-
-    const response = await fetch(url);
-    return await handleResponse(response);
   } catch (error) {
-    console.error('Error searching events:', error);
-    // Differentiate between network failures (like Connection Refused) and API errors
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error('Connection refused. Is the EventApp microservice running?');
-    }
-    throw error;
+    console.error('Error searching events in Firebase:', error);
+    throw new Error('Failed to search events.');
   }
 };
 
@@ -101,22 +113,29 @@ export const bookEvent = async (eventId, numTickets) => {
   }
 
   try {
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+    const eventRef = doc(db, 'events', eventId);
+    // Note: To be fully transactional, we should use runTransaction here.
+    // For now, we update the tickets natively via increment.
+
+    // First, verify there are enough tickets
+    const docSnap = await getDoc(eventRef);
+    if (!docSnap.exists()) throw new Error("Event does not exist.");
+
+    const data = docSnap.data();
+    const available = (data.totalTickets || data.total_tickets) - (data.bookedTickets || data.booked_tickets || 0);
+
+    if (available < numTickets) {
+      throw new Error(`Not enough tickets available. Only ${available} left.`);
     }
 
-    const response = await fetch(`${BASE_URL}/events/${eventId}/book?tickets=${numTickets}`, {
-      method: 'POST',
-      headers: headers
+    await updateDoc(eventRef, {
+      bookedTickets: increment(numTickets),
+      booked_tickets: increment(numTickets) // Support legacy field name if exists
     });
 
-    return await handleResponse(response);
+    return { success: true, message: "Successfully booked tickets." };
   } catch (error) {
-    console.error('Error booking event:', error);
+    console.error('Error booking event in Firebase:', error);
     throw error;
   }
 };
@@ -131,33 +150,20 @@ export const cancelBooking = async (eventId, numTickets) => {
   }
 
   try {
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+    const eventRef = doc(db, 'events', eventId);
 
-    const response = await fetch(`${BASE_URL}/events/${eventId}/cancel?tickets=${numTickets}`, {
-      method: 'POST',
-      headers: headers
+    // Decrease the bookedTickets count
+    await updateDoc(eventRef, {
+      bookedTickets: increment(-Math.abs(numTickets)),
+      booked_tickets: increment(-Math.abs(numTickets))
     });
 
-    const result = await handleResponse(response);
-
-    // To ensure proper data structure for client-side updates
-    if (result.success) {
-      if (!result.remainingTickets && result.remainingTickets !== 0) {
-        console.warn('API did not return remainingTickets value');
-        // Add a default value if the API doesn't return it
-        result.remainingTickets = "Updated";
-      }
-    }
-
-    return result;
+    return {
+      success: true,
+      remainingTickets: "Updated"
+    };
   } catch (error) {
-    console.error('Error cancelling booking:', error);
+    console.error('Error cancelling booking in Firebase:', error);
     throw error;
   }
 };
@@ -173,26 +179,20 @@ export const processRefund = async (eventId, numTickets, bookingReference) => {
   }
 
   try {
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+    const eventRef = doc(db, 'events', eventId);
 
-    const response = await fetch(`${BASE_URL}/events/${eventId}/refund`, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify({
-        tickets: numTickets,
-        bookingReference: bookingReference
-      })
+    // Decrease the bookedTickets count for refund
+    await updateDoc(eventRef, {
+      bookedTickets: increment(-Math.abs(numTickets)),
+      booked_tickets: increment(-Math.abs(numTickets))
     });
 
-    return await handleResponse(response);
+    return {
+      success: true,
+      message: "Refund processed successfully"
+    };
   } catch (error) {
-    console.error('Error processing refund:', error);
+    console.error('Error processing refund in Firebase:', error);
     throw error;
   }
 };
