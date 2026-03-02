@@ -74,7 +74,7 @@ public class ConfigLoader {
         // 1. Try System Property
         String value = System.getProperty(key);
         if (value != null) {
-            return value;
+            return value.trim();
         }
 
         // 2. Try Environment Variable (mapping dots to underscores and converting to
@@ -82,10 +82,11 @@ public class ConfigLoader {
         String envKey = key.replace('.', '_').toUpperCase();
         value = System.getenv(envKey);
         if (value != null) {
-            return value;
+            return value.trim();
         }
 
         // 3. Fallback to properties file
-        return properties.getProperty(key, defaultValue);
+        String propValue = properties.getProperty(key, defaultValue);
+        return propValue != null ? propValue.trim() : null;
     }
 }

@@ -43,6 +43,8 @@ services:
       - app-network
     environment:
       - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://frontend:80
+      - DIRECTIONS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - CURRENCY_API_KEY=${CURRENCY_API_KEY}
 
   imageservice:
     build:

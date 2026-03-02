@@ -21,7 +21,12 @@ public class DirectionsService {
 
     public DirectionsService() {
         // Load configuration with fallback to defaults
-        this.apiKey = ConfigLoader.getProperty("directions.api.key", DEFAULT_API_KEY);
+        String key = ConfigLoader.getProperty("directions.api.key", null);
+        if (key == null) {
+            key = ConfigLoader.getProperty("google.maps.api.key", DEFAULT_API_KEY);
+        }
+        this.apiKey = key;
+
         this.apiBaseUrl = ConfigLoader.getProperty("directions.api.url", DEFAULT_API_URL);
 
         // Log configuration (without sensitive data)
