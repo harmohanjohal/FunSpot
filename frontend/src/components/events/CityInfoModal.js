@@ -19,7 +19,6 @@ function CityInfoModal({ city, isOpen, onClose }) {
     setError(null);
 
     try {
-      // Call the backend API
       const baseUrl = API_CONFIG.BASE_URL || 'http://localhost:8081/api';
       const response = await fetch(`${baseUrl}/events/city-info?city=${encodeURIComponent(cityName)}`);
 
@@ -50,32 +49,78 @@ function CityInfoModal({ city, isOpen, onClose }) {
       title={`About ${city}`}
       onClose={onClose}
       footer={
-        <button onClick={onClose} className="btn">Close</button>
+        <button
+          onClick={onClose}
+          className="px-6 py-2.5 text-white font-semibold rounded-lg transition-all text-sm shadow-sm"
+          style={{
+            background: 'linear-gradient(135deg, #3AAFA9, #2B7A78)',
+            boxShadow: '0 4px 12px rgba(58, 175, 169, 0.3)',
+          }}
+        >
+          Close
+        </button>
       }
     >
-      <div className="p-4">
+      <div>
         {loading ? (
-          <div className="py-8 flex justify-center"><LoadingSpinner message={`Loading information about ${city}...`} /></div>
+          <div className="py-10 flex justify-center">
+            <LoadingSpinner message={`Loading information about ${city}...`} />
+          </div>
         ) : error ? (
-          <div className="p-4 rounded-lg border text-sm font-medium" style={{ background: 'var(--danger-bg)', borderColor: 'rgba(239,68,68,0.2)', color: '#fca5a5' }}>
+          <div
+            className="p-4 rounded-xl border text-sm font-medium flex items-center gap-3"
+            style={{ background: 'var(--danger-bg)', borderColor: 'var(--danger)', color: 'var(--danger)' }}
+          >
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             {error}
           </div>
         ) : cityFacts.length > 0 ? (
-          <div className="p-5 rounded-xl border" style={{ background: 'rgba(16,185,129,0.06)', borderColor: 'rgba(16,185,129,0.15)' }}>
-            <h4 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-main)' }}>
-              <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              Interesting Facts:
-            </h4>
-            <ol className="list-decimal pl-5 space-y-3" style={{ color: 'var(--text-muted)' }}>
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{ border: '1px solid var(--border-strong)' }}
+          >
+            {/* Facts header stripe */}
+            <div
+              className="px-5 py-3 flex items-center gap-2"
+              style={{ background: 'rgba(58,175,169,0.1)', borderBottom: '1px solid var(--border)' }}
+            >
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#3AAFA9' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h4 className="text-base font-bold m-0" style={{ color: '#2B7A78' }}>
+                Interesting Facts about {city}
+              </h4>
+            </div>
+
+            {/* Fact items */}
+            <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
               {cityFacts.map((fact, index) => (
-                <li key={index} className="leading-relaxed">
-                  {fact}
-                </li>
+                <div
+                  key={index}
+                  className="flex items-start gap-4 px-5 py-4"
+                  style={{ background: index % 2 === 0 ? 'var(--bg-page)' : 'var(--bg-elevated)' }}
+                >
+                  {/* Numbered badge */}
+                  <span
+                    className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white mt-0.5"
+                    style={{ background: 'linear-gradient(135deg, #3AAFA9, #2B7A78)' }}
+                  >
+                    {index + 1}
+                  </span>
+                  <p className="text-sm leading-relaxed m-0" style={{ color: 'var(--text-muted)' }}>
+                    {fact}
+                  </p>
+                </div>
               ))}
-            </ol>
+            </div>
           </div>
         ) : (
-          <div className="p-4 rounded-lg border text-center text-sm font-medium" style={{ background: 'var(--warning-bg)', borderColor: 'rgba(245,158,11,0.2)', color: '#fcd34d' }}>
+          <div
+            className="p-5 rounded-xl border text-center text-sm font-medium"
+            style={{ background: 'var(--warning-bg)', borderColor: 'rgba(230,81,0,0.25)', color: 'var(--warning)' }}
+          >
             No information available for {city}.
           </div>
         )}

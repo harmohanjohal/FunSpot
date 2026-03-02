@@ -234,7 +234,7 @@ function Register() {
                   checked={form.role === 'user'}
                   onChange={(e) => updateForm('role', e.target.value)}
                   className="w-4 h-4 cursor-pointer"
-                  style={{ accentColor: '#10b981' }}
+                  style={{ accentColor: '#3AAFA9' }}
                 />
                 <span className="text-sm font-medium text-slate-300 group-hover:text-slate-100">Standard User</span>
               </label>
@@ -246,7 +246,7 @@ function Register() {
                   checked={form.role === 'admin'}
                   onChange={(e) => updateForm('role', e.target.value)}
                   className="w-4 h-4 cursor-pointer"
-                  style={{ accentColor: '#10b981' }}
+                  style={{ accentColor: '#3AAFA9' }}
                 />
                 <span className="text-sm font-medium text-slate-300 group-hover:text-slate-100">Admin Developer</span>
               </label>

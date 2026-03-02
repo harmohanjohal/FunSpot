@@ -10,14 +10,18 @@ function FormField({
   options = [],
   error = '',
   placeholder = '',
-  className = 'w-full px-4 py-2.5 border border-slate-600 text-slate-100 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+  className = 'w-full px-4 py-2.5 border text-sm rounded-lg block focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
 }) {
   // Override className style for dark theme
   const darkClassName = className.includes('bg-gray-50')
     ? className.replace('bg-gray-50', '').replace('border-gray-300', 'border-slate-600').replace('text-gray-900', 'text-slate-100').replace('focus:ring-blue-500', 'focus:ring-emerald-500').replace('focus:border-blue-500', 'focus:border-emerald-500').replace('disabled:bg-gray-100', 'disabled:opacity-50').replace('disabled:text-gray-500', 'disabled:cursor-not-allowed')
     : className;
 
-  const inputStyle = { background: 'var(--bg-input)' };
+  const inputStyle = {
+    background: 'var(--bg-input)',
+    color: 'var(--text-main)',
+    border: '1px solid var(--border-strong)'
+  };
 
   const renderField = () => {
     switch (type) {
@@ -67,9 +71,9 @@ function FormField({
                   onChange={onChange}
                   required={required}
                   className="w-4 h-4 text-emerald-500 border-slate-600 focus:ring-emerald-500 focus:ring-2 cursor-pointer"
-                  style={{ accentColor: '#10b981' }}
+                  style={{ accentColor: '#3AAFA9' }}
                 />
-                <span className="text-sm font-medium text-slate-300 group-hover:text-slate-100">{option.label}</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>{option.label}</span>
               </label>
             ))}
           </div>
@@ -86,9 +90,9 @@ function FormField({
               onChange={onChange}
               required={required}
               className="w-4 h-4 text-emerald-500 border-slate-600 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer"
-              style={{ accentColor: '#10b981' }}
+              style={{ accentColor: '#3AAFA9' }}
             />
-            {label && <label htmlFor={id} className="text-sm font-medium text-slate-300 group-hover:text-slate-100 cursor-pointer m-0">{label}</label>}
+            {label && <label htmlFor={id} className="text-sm font-medium cursor-pointer m-0" style={{ color: 'var(--text-muted)' }}>{label}</label>}
           </div>
         );
 
@@ -121,7 +125,7 @@ function FormField({
 
   return (
     <div className="mb-4">
-      {label && <label htmlFor={id} className="block mb-1.5 text-sm font-medium text-slate-400">{label}</label>}
+      {label && <label htmlFor={id} className="block mb-1.5 text-sm font-semibold" style={{ color: 'var(--text-muted)' }}>{label}</label>}
       {renderField()}
       {error && <div className="mt-1 text-sm text-red-400 font-medium">{error}</div>}
     </div>

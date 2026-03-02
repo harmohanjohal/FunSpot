@@ -5,26 +5,55 @@ function Modal({ isOpen, title, children, footer, onClose }) {
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(6px)' }}>
-      <div className="w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl border border-slate-700/50 shadow-2xl" style={{ background: 'var(--bg-card-solid)', boxShadow: '0 0 30px rgba(16, 185, 129, 0.1), 0 8px 30px rgba(0,0,0,0.5)' }}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50" style={{ background: 'rgba(15, 23, 42, 0.5)' }}>
-          <h3 className="text-xl font-bold text-slate-100 m-0">{title}</h3>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(80, 60, 40, 0.45)', backdropFilter: 'blur(8px)' }}
+    >
+      <div
+        className="w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl shadow-2xl"
+        style={{
+          background: 'var(--bg-page)',
+          border: '1px solid var(--border-strong)',
+          boxShadow: '0 0 40px rgba(58, 175, 169, 0.12), 0 20px 60px rgba(80, 60, 40, 0.3)',
+        }}
+      >
+        {/* Header — teal accent bar with warm text */}
+        <div
+          className="flex items-center justify-between px-6 py-4"
+          style={{
+            background: 'linear-gradient(135deg, #2B7A78, #3AAFA9)',
+            borderBottom: '1px solid var(--border-strong)',
+          }}
+        >
+          <h3 className="text-xl font-bold text-white m-0 tracking-wide">{title}</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-slate-600 text-slate-400 hover:text-slate-200 hover:border-emerald-400 transition-colors focus:outline-none"
-            style={{ background: 'var(--bg-elevated)' }}
+            className="w-8 h-8 flex items-center justify-center rounded-full transition-colors focus:outline-none"
+            style={{
+              background: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white',
+            }}
             aria-label="Close"
           >
             <span className="text-xl font-medium leading-none mb-0.5">&times;</span>
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+        {/* Body */}
+        <div className="p-6 overflow-y-auto custom-scrollbar flex-1" style={{ background: 'var(--bg-page)' }}>
           {children}
         </div>
 
+        {/* Footer — warm elevated surface */}
         {footer && (
-          <div className="px-6 py-4 border-t border-slate-700/50 flex items-center justify-end gap-3 rounded-b-2xl" style={{ background: 'rgba(15, 23, 42, 0.5)' }}>
+          <div
+            className="px-6 py-4 flex items-center justify-end gap-3 rounded-b-2xl"
+            style={{
+              background: 'var(--bg-elevated)',
+              borderTop: '1px solid var(--border)',
+            }}
+          >
             {footer}
           </div>
         )}
