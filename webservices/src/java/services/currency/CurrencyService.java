@@ -50,6 +50,12 @@ public class CurrencyService {
             return response.toString();
         }
 
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("error", "CURRENCY_API_KEY is not configured on the server");
+            return response.toString();
+        }
+
         try {
             String apiUrl = apiBaseUrl + "?access_key=" + apiKey;
 

@@ -30,17 +30,15 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             
-            # 3. Inject configuration from GitHub Secrets
-            echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
-            
-            # 4. Check for SSL. If it's missing, run the bootstrap
-            if [ ! -f "./data/certbot/conf/live/funspot.harmohanjohal.com/fullchain.pem" ]; then
-              echo "SSL Certificate missing. Bootstrapping..."
-              chmod +x init-letsencrypt.sh
-              ./init-letsencrypt.sh
+            # 3. Inject configuration from GitHub Secrets (Only if it doesn't exist)
+            if [ ! -f .env ]; then
+              echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+              echo "Created new .env configuration file from secrets."
+            else
+              echo ".env already exists on server. Skipping override to preserve live configuration keys."
             fi
             
-            # 5. Launch / Update Stack
+            # 4. Launch / Update Stack
             docker compose -f docker-compose.ssl.yml up -d --build
             
             echo "Deployment successful!"
