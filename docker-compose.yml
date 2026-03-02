@@ -18,7 +18,7 @@ services:
       - REACT_APP_IMAGE_SERVICE_URL=http://localhost:8083/api
       - REACT_APP_WEB_SERVICES_URL=http://localhost:8082/api
 
-  eventapp:  
+  eventapp:
     build:
       context: ./eventapp
       dockerfile: Dockerfile
@@ -54,6 +54,7 @@ services:
       - app-network
     environment:
       - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://frontend:80
+      - PIXABAY_API_KEY=${PIXABAY_API_KEY}
 
 networks:
   app-network:

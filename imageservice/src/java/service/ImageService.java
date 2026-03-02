@@ -37,6 +37,12 @@ public class ImageService {
             return response.toString();
         }
 
+        if (PIXABAY_API_KEY == null || PIXABAY_API_KEY.trim().isEmpty()) {
+            response.put("success", false);
+            response.put("error", "PIXABAY_API_KEY is not configured on the server");
+            return response.toString();
+        }
+
         try {
             // URL encode the search term
             String encodedSearchTerm = URLEncoder.encode(searchTerm.toLowerCase(), "UTF-8");
