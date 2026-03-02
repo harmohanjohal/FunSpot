@@ -11,7 +11,6 @@ FROM tomcat:9-jre11-slim
 RUN rm -rf /usr/local/tomcat/webapps/*
 RUN mkdir -p /app/data
 COPY --from=build /app/target/EventApp.war /usr/local/tomcat/webapps/ROOT.war
-COPY Events.json /app/data/
 ENV JSON_FILE_PATH=/app/data/Events.json
 
 EXPOSE 8080
