@@ -42,7 +42,7 @@ function GetDirectionsModal({ event, isOpen, onClose }) {
       setError(null);
 
       // Call the API to get directions
-      const response = await getDirectionsToEvent(event.id, fromAddress, transportMode);
+      const response = await getDirectionsToEvent(event, fromAddress, transportMode);
 
       if (response && response.success) {
         setDirections(response);

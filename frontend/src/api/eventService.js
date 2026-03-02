@@ -198,13 +198,14 @@ export const processRefund = async (eventId, numTickets, bookingReference) => {
 };
 
 
-export const convertEventPrice = async (eventId, toCurrency) => {
-  if (!eventId || !toCurrency) {
-    throw new Error('Event ID and target currency are required');
+export const convertEventPrice = async (amount, fromCurrency, toCurrency) => {
+  if (amount === undefined || !fromCurrency || !toCurrency) {
+    throw new Error('Amount, source, and target currency are required');
   }
 
   try {
-    const response = await fetch(`${BASE_URL}/events/${eventId}/convertPrice?toCurrency=${toCurrency}`);
+    const url = `${BASE_URL}/events/convertPrice?amount=${amount}&fromCurrency=${encodeURIComponent(fromCurrency)}&toCurrency=${encodeURIComponent(toCurrency)}`;
+    const response = await fetch(url);
     return await handleResponse(response);
   } catch (error) {
     console.error('Error converting price:', error);
@@ -213,17 +214,19 @@ export const convertEventPrice = async (eventId, toCurrency) => {
 };
 
 
-export const getDirectionsToEvent = async (eventId, fromAddress, mode = 'driving') => {
-  if (!eventId || !fromAddress) {
-    throw new Error('Event ID and starting address are required');
+export const getDirectionsToEvent = async (event, fromAddress, mode = 'driving') => {
+  if (!event || !fromAddress) {
+    throw new Error('Event object and starting address are required');
   }
 
   try {
     // Encode parameters for URL
-    const encodedAddress = encodeURIComponent(fromAddress);
-    const encodedMode = encodeURIComponent(mode);
+    let url = `${BASE_URL}/events/directions?fromAddress=${encodeURIComponent(fromAddress)}&mode=${encodeURIComponent(mode)}`;
+    if (event.location) url += `&venueName=${encodeURIComponent(event.location)}`;
+    if (event.venueAddress) url += `&venueAddress=${encodeURIComponent(event.venueAddress)}`;
+    if (event.city) url += `&city=${encodeURIComponent(event.city)}`;
+    if (event.postcode) url += `&postcode=${encodeURIComponent(event.postcode)}`;
 
-    const url = `${BASE_URL}/events/${eventId}/directions?fromAddress=${encodedAddress}&mode=${encodedMode}`;
     const response = await fetch(url);
 
     return await handleResponse(response);
@@ -247,95 +250,6 @@ export const getCityInfo = async (city) => {
   }
 };
 
-export const getEventStatistics = async () => {
-  try {
-    const response = await fetch(`${BASE_URL}/events/statistics`);
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Error fetching event statistics:', error);
-    throw error;
-  }
-};
-
-export const createEvent = async (eventData) => {
-  if (!eventData) {
-    throw new Error('Event data is required');
-  }
-
-  try {
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${BASE_URL}/events`, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(eventData)
-    });
-
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Error creating event:', error);
-    throw error;
-  }
-};
-
-export const updateEvent = async (eventId, eventData) => {
-  if (!eventId || !eventData) {
-    throw new Error('Event ID and updated data are required');
-  }
-
-  try {
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${BASE_URL}/events/update/${eventId}`, {
-      method: 'PUT',
-      headers: headers,
-      body: JSON.stringify(eventData)
-    });
-
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Error updating event:', error);
-    throw error;
-  }
-};
-
-export const deleteEvent = async (eventId) => {
-  if (!eventId) {
-    throw new Error('Event ID is required');
-  }
-
-  try {
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${BASE_URL}/events/${eventId}/cancelEvent`, {
-      method: 'POST',
-      headers: headers
-    });
-
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('Error deleting event:', error);
-    throw error;
-  }
-};
 
 export const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -363,9 +277,5 @@ export default {
   convertEventPrice,
   getDirectionsToEvent,
   getCityInfo,
-  getEventStatistics,
-  createEvent,
-  updateEvent,
-  deleteEvent,
   formatDate
 };
