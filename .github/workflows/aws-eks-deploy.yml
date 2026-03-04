@@ -1,0 +1,107 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: eu-west-2
+  # This secret must be added to GitHub Secrets: It is your 12-digit AWS Account ID
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
+
+jobs:
+  test:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies and test
+        run: |
+          cd webservices
+          npm install
+          npm run test --if-present
+
+  build-push-backend:
+    name: Build & Push Backend
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push images to ECR
+        run: |
+          # Build and Push Webservices
+          docker build -t ${{ env.ECR_REGISTRY }}/soct-webservices:${{ github.sha }} ./webservices
+          docker push ${{ env.ECR_REGISTRY }}/soct-webservices:${{ github.sha }}
+          
+          # Build and Push EventApp
+          docker build -t ${{ env.ECR_REGISTRY }}/soct-eventapp:${{ github.sha }} ./eventapp
+          docker push ${{ env.ECR_REGISTRY }}/soct-eventapp:${{ github.sha }}
+          
+          # Build and Push ImageService
+          docker build -t ${{ env.ECR_REGISTRY }}/soct-imageservice:${{ github.sha }} ./imageservice
+          docker push ${{ env.ECR_REGISTRY }}/soct-imageservice:${{ github.sha }}
+
+  build-push-frontend:
+    name: Build & Push Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to ECR
+        run: |
+          docker build -t ${{ env.ECR_REGISTRY }}/soct-frontend:${{ github.sha }} ./frontend
+          docker push ${{ env.ECR_REGISTRY }}/soct-frontend:${{ github.sha }}
+
+  deploy:
+    name: Deploy to Server
+    needs: [build-push-backend, build-push-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name soct-eks-cluster --region ${{ env.AWS_REGION }}
+
+      - name: Deploy to Amazon EKS
+        run: |
+          # Replace placeholders in Kubernetes YAML files with the actual Registry and SHA
+          sed -i "s|ECR_REGISTRY|${{ env.ECR_REGISTRY }}|g" k8s/*.yaml
+          sed -i "s|LATEST_SHA|${{ github.sha }}|g" k8s/*.yaml
+          
+          # Apply the manifests
+          kubectl apply -f k8s/
+          
+          # Verify rollout status
+          kubectl rollout status deployment/frontend
+          kubectl rollout status deployment/webservices

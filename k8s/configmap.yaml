@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: soct-config
+data:
+  NODE_ENV: "production"
+  # Put other non-sensitive environment variables here (e.g., API URIs)
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: soct-secrets
+type: Opaque
+stringData:
+  # The GitHub pipeline or a manual kubectl command will inject sensitive data like RDS passwords and API Keys here
+  DB_PASSWORD: "to-be-replaced-in-pipeline"

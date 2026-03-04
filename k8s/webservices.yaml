@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webservices
+  labels:
+    app: webservices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webservices
+  template:
+    metadata:
+      labels:
+        app: webservices
+    spec:
+      containers:
+        - name: webservices
+          image: ECR_REGISTRY/soct-webservices:LATEST_SHA
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: soct-config
+            - secretRef:
+                name: soct-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webservices-service
+spec:
+  selector:
+    app: webservices
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+  type: ClusterIP
