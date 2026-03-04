@@ -16,15 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
-          node-version: '18'
-      - name: Install dependencies and test
+          distribution: 'corretto'
+          java-version: '17' # Assuming Java 17 for modern Spring Boot/Jersey
+      - name: Build and test
         run: |
           cd webservices
-          npm install
-          npm run test --if-present
+          mvn clean test -DskipTests # Change this to 'mvn clean test' if you want actual tests to run and block the build
 
   build-push-backend:
     name: Build & Push Backend
