@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageservice
+  labels:
+    app: imageservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: imageservice
+  template:
+    metadata:
+      labels:
+        app: imageservice
+    spec:
+      containers:
+        - name: imageservice
+          image: ECR_REGISTRY/soct-imageservice:LATEST_SHA
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: soct-config
+            - secretRef:
+                name: soct-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: imageservice-service
+spec:
+  selector:
+    app: imageservice
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: ClusterIP
